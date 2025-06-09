@@ -22,12 +22,23 @@ ENV/
 # Logs
 *.log
 
+# Large dependencies and installers
+dependencies/*.exe
+dependencies/*.zip
+dependencies/*.msi
+dependencies/*.dmg
+
 # Processed book files
 **/images/
 **/text/
 **/chapters/
 **/combined/
 *.zip
+sample/
+
+# Book files
+*.pdf
+*.djvu
 
 # OS specific files
 .DS_Store
