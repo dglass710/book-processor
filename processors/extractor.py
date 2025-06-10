@@ -5,8 +5,13 @@ import os
 import subprocess
 from pathlib import Path
 import PyPDF2
-from ..utils.file_utils import check_command_exists
-from ..utils.progress import ProgressTracker
+import sys
+import os
+
+# Add parent directory to path to allow imports
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))  
+from utils.file_utils import check_command_exists
+from utils.progress import ProgressTracker
 
 
 class PDFExtractor:

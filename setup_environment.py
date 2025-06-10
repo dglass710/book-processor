@@ -136,8 +136,8 @@ def main():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     sys.path.insert(0, current_dir)
     
-    # Import the main function
-    from book_processor.main import main as run_processor
+    # Import the main function directly
+    from main import main as run_processor
     
     # Check if we have a pre-selected PDF file
     input_file = os.environ.get("BOOK_PROCESSOR_INPUT_FILE")

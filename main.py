@@ -16,22 +16,22 @@ from pathlib import Path
 from datetime import datetime
 
 # Import utility modules
-from book_processor.utils.file_utils import (
+from utils.file_utils import (
     get_platform, normalize_path, ensure_dir, get_basename,
     check_file_exists, check_file_readable, open_file_with_default_app,
     create_project_structure, check_command_exists, create_zip_archive
 )
-from book_processor.utils.validation import (
+from utils.validation import (
     validate_input_file, validate_page_numbers, validate_pdf_integrity,
     validate_djvu_integrity, parse_user_input
 )
-from book_processor.utils.progress import ProgressTracker, StepProgress
+from utils.progress import ProgressTracker, StepProgress
 
 # Import processor modules
-from book_processor.processors.converter import FormatConverter
-from book_processor.processors.extractor import PDFExtractor
-from book_processor.processors.ocr import OCRProcessor
-from book_processor.processors.organizer import ChapterOrganizer, CombinedChapterOrganizer
+from processors.converter import FormatConverter
+from processors.extractor import PDFExtractor
+from processors.ocr import OCRProcessor
+from processors.organizer import ChapterOrganizer, CombinedChapterOrganizer
 
 
 def check_dependencies():
