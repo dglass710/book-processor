@@ -594,10 +594,11 @@ class CombinedChapterOrganizer:
                     outfile.write("- Pages are clearly marked: [BEGIN PAGE X (Book Page Y)] / [END PAGE X (Book Page Y)].\n\n")
                 else:
                     outfile.write("- Pages are clearly marked: [BEGIN PAGE X] / [END PAGE X].\n\n")
-            if has_page_offset:
-                outfile.write(f"Your mission is to deliver fully accurate, strictly sourced, index-confirmed responses from *{book_title}*. Always use the narrowest page range directly covering the topic and ALWAYS cite both Book Pages and PDF Pages in every citation.")
-            else:
-                outfile.write(f"Your mission is to deliver fully accurate, strictly sourced, index-confirmed responses from *{book_title}*. Always use the narrowest page range directly covering the topic.")
+                
+                if has_page_offset:
+                    outfile.write(f"Your mission is to deliver fully accurate, strictly sourced, index-confirmed responses from *{book_title}*. Always use the narrowest page range directly covering the topic and ALWAYS cite both Book Pages and PDF Pages in every citation.")
+                else:
+                    outfile.write(f"Your mission is to deliver fully accurate, strictly sourced, index-confirmed responses from *{book_title}*. Always use the narrowest page range directly covering the topic.")
             
             return True, f"Successfully created instructions file", instructions_path
         
