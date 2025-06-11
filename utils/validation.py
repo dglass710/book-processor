@@ -3,7 +3,6 @@ Validation utilities for user input and file integrity
 """
 import os
 import re
-import subprocess
 from .file_utils import check_file_exists, check_file_readable
 
 
@@ -98,31 +97,13 @@ def validate_pdf_integrity(pdf_path):
 
 
 def validate_djvu_integrity(djvu_path):
-    """
-    Check if a DJVU file is valid and not corrupted
-    
-    Returns:
-        tuple: (is_valid, message)
-    """
+    """Check if a DJVU file is valid using PyMuPDF"""
     try:
-        # Use djvused to check the file
-        result = subprocess.run(
-            ['djvused', '-e', 'n', djvu_path],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            check=False
-        )
-        
-        if result.returncode != 0:
-            return False, f"DJVU file appears to be corrupt: {result.stderr}"
-        
-        # Try to get page count
-        try:
-            page_count = int(result.stdout.strip())
-            return True, f"DJVU is valid with {page_count} pages"
-        except ValueError:
-            return True, "DJVU file appears to be valid"
+        import fitz
+        doc = fitz.open(djvu_path)
+        page_count = doc.page_count
+        doc.close()
+        return True, f"DJVU is valid with {page_count} pages"
     except Exception as e:
         return False, f"Could not validate DJVU file: {str(e)}"
 

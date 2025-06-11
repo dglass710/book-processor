@@ -2,14 +2,11 @@
 Converter module for handling file format conversions
 """
 import os
-import subprocess
-import shutil
 import sys
-import os
+import fitz  # PyMuPDF
 
 # Add parent directory to path to allow imports
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))  
-from utils.file_utils import check_command_exists
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 
 class FormatConverter:
@@ -17,8 +14,11 @@ class FormatConverter:
     Convert between different document formats
     """
     def __init__(self):
-        self.has_djvulibre = check_command_exists('djvulibre') or check_command_exists('ddjvu')
-        self.ddjvu_command = 'ddjvu' if check_command_exists('ddjvu') else 'djvulibre-bin'
+        try:
+            import fitz  # noqa: F401
+            self.has_pymupdf = True
+        except Exception:
+            self.has_pymupdf = False
     
     def check_dependencies(self):
         """
@@ -27,8 +27,8 @@ class FormatConverter:
         Returns:
             tuple: (success, message)
         """
-        if not self.has_djvulibre:
-            return False, "djvulibre not found. Please install djvulibre package."
+        if not self.has_pymupdf:
+            return False, "PyMuPDF (fitz) not installed."
         return True, "All dependencies found."
     
     def install_dependencies_guide(self):
@@ -40,12 +40,9 @@ class FormatConverter:
         """
         instructions = "To install required dependencies:\n\n"
         
-        if not self.has_djvulibre:
-            instructions += "DjVuLibre Installation:\n"
-            instructions += "- Windows: Download from https://sourceforge.net/projects/djvu/files/DjVuLibre_Windows/\n"
-            instructions += "- macOS: Run 'brew install djvulibre'\n"
-            instructions += "- Linux (Debian/Ubuntu): Run 'sudo apt-get install djvulibre-bin'\n"
-            instructions += "- Linux (Fedora): Run 'sudo dnf install djvulibre'\n\n"
+        if not self.has_pymupdf:
+            instructions += "PyMuPDF Installation:\n"
+            instructions += "- Run 'pip install PyMuPDF'\n\n"
         
         return instructions
     
@@ -61,30 +58,16 @@ class FormatConverter:
         Returns:
             tuple: (success, message)
         """
-        if not self.has_djvulibre:
-            return False, "djvulibre not found. Cannot convert DJVU to PDF."
+        if not self.has_pymupdf:
+            return False, "PyMuPDF not available. Cannot convert DJVU to PDF."
         
         try:
-            # Ensure quality is within range
-            quality = max(1, min(100, quality))
-            
-            # Run the conversion command
-            cmd = [self.ddjvu_command, '-format=pdf', f'-quality={quality}', djvu_path, output_pdf_path]
-            
-            result = subprocess.run(
-                cmd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-                check=False
-            )
-            
-            if result.returncode != 0:
-                return False, f"Error converting DJVU to PDF: {result.stderr}"
-            
+            doc = fitz.open(djvu_path)
+            doc.save(output_pdf_path)
+            doc.close()
             if not os.path.exists(output_pdf_path):
                 return False, "Conversion failed: Output PDF not created"
-            
+
             return True, f"Successfully converted DJVU to PDF at {output_pdf_path}"
         
         except Exception as e:

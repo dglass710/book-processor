@@ -8,7 +8,6 @@ and then runs the book processor.
 import os
 import sys
 import subprocess
-from pathlib import Path
 
 def check_dependency(name, command):
     """Check if a dependency is available in the PATH."""
@@ -49,29 +48,6 @@ def check_dependency(name, command):
         print(f"✗ {name} is not found in PATH")
         return False
 
-def find_poppler():
-    """Find Poppler binaries in common locations."""
-    possible_paths = [
-        # Standard path from our previous setup
-        os.path.join(os.path.expanduser("~"), "poppler", "poppler-23.11.0", "Library", "bin"),
-        # Other common paths
-        os.path.join(os.path.expanduser("~"), "poppler", "bin"),
-        os.path.join(os.path.expanduser("~"), "poppler-23.11.0", "bin"),
-        r"C:\Program Files\poppler\bin",
-        r"C:\Program Files (x86)\poppler\bin",
-        # Check if it's directly in PATH
-        ""
-    ]
-    
-    # Check each path for pdftoppm.exe
-    for path in possible_paths:
-        if not path:  # Skip empty path (direct PATH check)
-            continue
-            
-        if os.path.exists(path) and os.path.exists(os.path.join(path, "pdftoppm.exe")):
-            return path
-    
-    return None
 
 def main():
     """Setup environment and run book processor."""
@@ -89,45 +65,17 @@ def main():
         print(f"Tesseract not found at {tesseract_path}")
         print("Please install Tesseract from https://github.com/UB-Mannheim/tesseract/wiki")
     
-    # Find and add Poppler to PATH
-    poppler_path = find_poppler()
-    if poppler_path:
-        print(f"Found Poppler at {poppler_path}")
-        os.environ["PATH"] = poppler_path + os.pathsep + os.environ.get("PATH", "")
-        print("Added Poppler to PATH")
-    else:
-        print("Poppler not found in common locations")
-        print("Please make sure Poppler is installed and its bin directory is accessible")
-    
     # Verify dependencies
     print("\nVerifying dependencies:")
     tesseract_ok = check_dependency("Tesseract", "tesseract")
-    poppler_ok = check_dependency("Poppler", "pdftoppm")
     
-    if not (tesseract_ok and poppler_ok):
-        print("\nSome dependencies are missing or not working properly.")
-        
-        if not poppler_ok:
-            print("\nPoppler issue detected. Let's try to locate pdftoppm manually...")
-            # Search for pdftoppm in the filesystem
-            for root_dir in [os.path.expanduser("~"), "C:\\"]:
-                for root, dirs, files in os.walk(root_dir):
-                    if "pdftoppm.exe" in files:
-                        poppler_bin = os.path.abspath(root)
-                        print(f"Found pdftoppm at: {poppler_bin}")
-                        os.environ["PATH"] = poppler_bin + os.pathsep + os.environ.get("PATH", "")
-                        poppler_ok = check_dependency("Poppler (retry)", "pdftoppm")
-                        if poppler_ok:
-                            break
-                if poppler_ok:
-                    break
-        
-        if not (tesseract_ok and poppler_ok):
-            print("\nWould you like to continue anyway? (y/N)")
-            response = input().strip().lower()
-            if response != 'y':
-                print("Exiting setup. Please install the missing dependencies and try again.")
-                return 1
+    if not tesseract_ok:
+        print("\nTesseract is missing or not working properly.")
+        print("Would you like to continue anyway? (y/N)")
+        response = input().strip().lower()
+        if response != 'y':
+            print("Exiting setup. Please install the missing dependencies and try again.")
+            return 1
     
     # Run the book processor
     print("\nRunning book processor...")
