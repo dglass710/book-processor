@@ -4,13 +4,28 @@ OCR module for extracting text from images
 import os
 import subprocess
 from pathlib import Path
+from concurrent.futures import ProcessPoolExecutor, as_completed
 import sys
-import os
 
 # Add parent directory to path to allow imports
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))  
 from utils.file_utils import check_command_exists
 from utils.progress import ProgressTracker
+
+
+def _process_batch_worker(args):
+    """Process a batch of images in a single worker."""
+    batch, language, config = args
+    proc = OCRProcessor()
+    processed = []
+    failed = []
+    for image_path, output_path in batch:
+        success, message = proc.process_image(image_path, output_path, language, config)
+        if success:
+            processed.append(f"{output_path}.txt")
+        else:
+            failed.append((image_path, message))
+    return processed, failed
 
 
 class OCRProcessor:
@@ -158,7 +173,7 @@ class OCRProcessor:
     
     def process_images(self, image_paths, output_dir, language='eng', config='', prefix='page'):
         """
-        Process multiple images with OCR
+        Process multiple images sequentially with OCR
         
         Args:
             image_paths: List of paths to image files
@@ -224,3 +239,72 @@ class OCRProcessor:
             )
         
         return True, f"OCR completed successfully for all {len(image_paths)} images", processed_files
+
+    def process_images_parallel(self, image_paths, output_dir, language='eng', config='', prefix='page', max_workers=None):
+        """Process multiple images in parallel using batches."""
+        if not self.has_tesseract:
+            return False, "Tesseract OCR not found", []
+
+        if max_workers is None:
+            max_workers = os.cpu_count() or 1
+
+        os.makedirs(output_dir, exist_ok=True)
+
+        # Pre-compute output filenames and pair them with input images
+        pairs = []
+        for i, image_path in enumerate(image_paths):
+            try:
+                filename = os.path.basename(image_path)
+                name_parts = os.path.splitext(filename)[0].split('-')
+                if len(name_parts) > 1 and name_parts[-1].isdigit():
+                    page_num = int(name_parts[-1])
+                    output_filename = f"{prefix}-{page_num:03d}"
+                else:
+                    output_filename = f"{prefix}-{i+1:03d}"
+            except Exception:
+                output_filename = f"{prefix}-{i+1:03d}"
+
+            output_path = os.path.join(output_dir, output_filename)
+            pairs.append((image_path, output_path))
+
+        total_pages = len(pairs)
+        max_workers = min(max_workers, total_pages)
+        pages_per_worker = total_pages // max_workers
+        remainder = total_pages % max_workers
+
+        batches = []
+        start = 0
+        for i in range(max_workers):
+            extra = 1 if i < remainder else 0
+            end = start + pages_per_worker + extra
+            if start < end:
+                batches.append(pairs[start:end])
+            start = end
+
+        processed_files = []
+        failed_files = []
+        progress = ProgressTracker(total_pages, "Processing OCR").start()
+
+        with ProcessPoolExecutor(max_workers=max_workers) as executor:
+            futures = {
+                executor.submit(_process_batch_worker, (batch, language, config)): len(batch)
+                for batch in batches
+            }
+            for future in as_completed(futures):
+                proc_files, errors = future.result()
+                processed_files.extend(proc_files)
+                failed_files.extend(errors)
+                for _ in range(len(proc_files) + len(errors)):
+                    progress.update()
+
+        progress.finish()
+
+        if failed_files:
+            failures = len(failed_files)
+            return (
+                len(processed_files) > 0,
+                f"OCR completed with {failures} failures out of {total_pages} images",
+                processed_files,
+            )
+
+        return True, f"OCR completed successfully for all {total_pages} images", processed_files
