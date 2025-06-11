@@ -439,7 +439,7 @@ def main():
     print(f"\nPerforming OCR on images to {dirs['text']}")
     
     ocr = OCRProcessor()
-    success, message, text_files = ocr.process_images(
+    success, message, text_files = ocr.process_images_parallel(
         image_files, dirs['text'], language='eng', prefix='page'
     )
     
