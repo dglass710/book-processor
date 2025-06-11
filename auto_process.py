@@ -29,7 +29,6 @@ def main(timeout=None):
     
     # Define the responses to provide to stdin
     responses = [
-        "y",  # Continue anyway? (y/N)
         "Responding to Emergencies: Comprehensive First Aid/CPR/AED by American Red Cross",  # Book title
         "23",  # Page offset
         "y",  # Is page offset correct?
