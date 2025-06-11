@@ -23,8 +23,8 @@ def main():
         try:
             # Check if the argument is a string of digits only
             if sys.argv[1].isdigit():
-                # Construct the path with the provided number
-                directory = os.path.join(base_path + f" ({sys.argv[1]})", "images")
+                # Construct the base path with the provided number
+                book_dir = base_path + f" ({sys.argv[1]})"
             else:
                 print("Error: Argument must be a number.")
                 sys.exit(1)
@@ -33,25 +33,33 @@ def main():
             sys.exit(1)
     else:
         # Use default path without number
-        directory = os.path.join(base_path, "images")
+        book_dir = base_path
+    
+    # Define paths for both directories
+    images_dir = os.path.join(book_dir, "images")
+    text_dir = os.path.join(book_dir, "text")
     
     # Interval in seconds
     interval = 5
     
-    print(f"Monitoring files in: {directory}")
+    print(f"Monitoring files in:\n- {images_dir}\n- {text_dir}")
     print(f"Updating every {interval} seconds. Press Ctrl+C to stop.")
-    print("-" * 50)
+    print("-" * 70)
     
     try:
         while True:
             # Get current time
             current_time = datetime.now().strftime("%H:%M:%S")
             
-            # Count files
-            file_count = count_files(directory)
+            # Count files in both directories
+            images_count = count_files(images_dir)
+            text_count = count_files(text_dir)
             
-            # Display the count
-            print(f"{current_time} - Files: {file_count}")
+            # Display the counts with full paths
+            print(f"{current_time}:")
+            print(f"  {images_dir}: {images_count}")
+            print(f"  {text_dir}: {text_count}")
+            print("-" * 70)
             
             # Wait for the specified interval
             time.sleep(interval)
