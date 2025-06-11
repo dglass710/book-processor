@@ -13,15 +13,6 @@ IF EXIST "C:\Program Files\Tesseract-OCR\tesseract.exe" (
     echo Please install Tesseract from https://github.com/UB-Mannheim/tesseract/wiki
 )
 
-REM Add Poppler to PATH if it exists
-echo Checking for Poppler...
-IF EXIST "%USERPROFILE%\poppler\poppler-23.11.0\Library\bin" (
-    echo Found Poppler at %USERPROFILE%\poppler\poppler-23.11.0\Library\bin
-    SET "PATH=%USERPROFILE%\poppler\poppler-23.11.0\Library\bin;%PATH%"
-    echo Added Poppler to PATH
-) ELSE (
-    echo Poppler not found at %USERPROFILE%\poppler\poppler-23.11.0\Library\bin
-)
 
 REM Verify dependencies are in PATH
 echo.
@@ -34,13 +25,6 @@ IF %ERRORLEVEL% EQU 0 (
     echo Tesseract is not available in PATH
 )
 
-where pdftoppm 2>NUL
-IF %ERRORLEVEL% EQU 0 (
-    echo Poppler is available: 
-    pdftoppm -v
-) ELSE (
-    echo Poppler is not available in PATH
-)
 
 echo.
 echo Setup complete!

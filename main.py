@@ -43,14 +43,6 @@ def check_dependencies():
     """
     missing = []
     
-    # Check for djvulibre
-    if not check_command_exists('ddjvu') and not check_command_exists('djvulibre'):
-        missing.append('djvulibre')
-    
-    # Check for poppler
-    if not check_command_exists('pdftoppm'):
-        missing.append('poppler')
-    
     # Check for tesseract
     if not check_command_exists('tesseract'):
         missing.append('tesseract')
@@ -60,11 +52,11 @@ def check_dependencies():
         import PyPDF2
     except ImportError:
         missing.append('PyPDF2')
-    
+
     try:
-        import pdf2image
+        import fitz  # PyMuPDF
     except ImportError:
-        missing.append('pdf2image')
+        missing.append('PyMuPDF')
     
     return len(missing) == 0, missing
 
@@ -84,27 +76,7 @@ def install_dependencies_guide(missing_dependencies):
     platform = get_platform()
     
     for dep in missing_dependencies:
-        if dep == 'djvulibre':
-            instructions += "DjVuLibre Installation:\n"
-            if platform == 'windows':
-                instructions += "- Windows: Download from https://sourceforge.net/projects/djvu/files/DjVuLibre_Windows/\n"
-            elif platform == 'macos':
-                instructions += "- macOS: Run 'brew install djvulibre'\n"
-            else:
-                instructions += "- Linux (Debian/Ubuntu): Run 'sudo apt-get install djvulibre-bin'\n"
-                instructions += "- Linux (Fedora): Run 'sudo dnf install djvulibre'\n"
-        
-        elif dep == 'poppler':
-            instructions += "Poppler Utils Installation:\n"
-            if platform == 'windows':
-                instructions += "- Windows: Download from http://blog.alivate.com.au/poppler-windows/\n"
-            elif platform == 'macos':
-                instructions += "- macOS: Run 'brew install poppler'\n"
-            else:
-                instructions += "- Linux (Debian/Ubuntu): Run 'sudo apt-get install poppler-utils'\n"
-                instructions += "- Linux (Fedora): Run 'sudo dnf install poppler-utils'\n"
-        
-        elif dep == 'tesseract':
+        if dep == 'tesseract':
             instructions += "Tesseract OCR Installation:\n"
             if platform == 'windows':
                 instructions += "- Windows: Download from https://github.com/UB-Mannheim/tesseract/wiki\n"
@@ -113,15 +85,15 @@ def install_dependencies_guide(missing_dependencies):
             else:
                 instructions += "- Linux (Debian/Ubuntu): Run 'sudo apt-get install tesseract-ocr'\n"
                 instructions += "- Linux (Fedora): Run 'sudo dnf install tesseract'\n"
-        
+
         elif dep == 'PyPDF2':
             instructions += "PyPDF2 Python Library:\n"
             instructions += "- Run 'pip install PyPDF2'\n"
-        
-        elif dep == 'pdf2image':
-            instructions += "pdf2image Python Library:\n"
-            instructions += "- Run 'pip install pdf2image'\n"
-        
+
+        elif dep == 'PyMuPDF':
+            instructions += "PyMuPDF Library:\n"
+            instructions += "- Run 'pip install PyMuPDF'\n"
+
         instructions += "\n"
     
     return instructions

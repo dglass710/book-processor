@@ -2,15 +2,12 @@
 Extractor module for converting PDF pages to images
 """
 import os
-import subprocess
-from pathlib import Path
-import PyPDF2
 import sys
-import os
+import fitz  # PyMuPDF
+import PyPDF2
 
 # Add parent directory to path to allow imports
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))  
-from utils.file_utils import check_command_exists
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from utils.progress import ProgressTracker
 
 
@@ -19,16 +16,11 @@ class PDFExtractor:
     Extract images from PDF files
     """
     def __init__(self):
-        # Check for poppler tools
-        self.has_pdftoppm = check_command_exists('pdftoppm')
-        self.has_pdfimages = check_command_exists('pdfimages')
-        
-        # Check for pdf2image library
         try:
-            import pdf2image
-            self.has_pdf2image = True
-        except ImportError:
-            self.has_pdf2image = False
+            import fitz  # noqa: F401
+            self.has_pymupdf = True
+        except Exception:
+            self.has_pymupdf = False
     
     def check_dependencies(self):
         """
@@ -37,8 +29,8 @@ class PDFExtractor:
         Returns:
             tuple: (success, message)
         """
-        if not (self.has_pdftoppm or self.has_pdf2image):
-            return False, "Neither pdftoppm nor pdf2image found. Cannot extract images from PDF."
+        if not self.has_pymupdf:
+            return False, "PyMuPDF not installed. Cannot extract images from PDF."
         return True, "PDF extraction dependencies found."
     
     def install_dependencies_guide(self):
@@ -50,16 +42,9 @@ class PDFExtractor:
         """
         instructions = "To install required dependencies:\n\n"
         
-        if not self.has_pdftoppm:
-            instructions += "Poppler Utils Installation:\n"
-            instructions += "- Windows: Download from http://blog.alivate.com.au/poppler-windows/\n"
-            instructions += "- macOS: Run 'brew install poppler'\n"
-            instructions += "- Linux (Debian/Ubuntu): Run 'sudo apt-get install poppler-utils'\n"
-            instructions += "- Linux (Fedora): Run 'sudo dnf install poppler-utils'\n\n"
-        
-        if not self.has_pdf2image:
-            instructions += "pdf2image Python Library:\n"
-            instructions += "Run 'pip install pdf2image'\n\n"
+        if not self.has_pymupdf:
+            instructions += "PyMuPDF Installation:\n"
+            instructions += "Run 'pip install PyMuPDF'\n\n"
         
         return instructions
     
@@ -96,137 +81,45 @@ class PDFExtractor:
                 'error': str(e)
             }
     
-    def extract_images_with_poppler(self, pdf_path, output_dir, dpi=300, format='png', prefix='page'):
-        """
-        Extract images from PDF using poppler tools
-        
-        Args:
-            pdf_path: Path to the PDF file
-            output_dir: Directory to save extracted images
-            dpi: Resolution in dots per inch
-            format: Output image format (png, jpg, etc.)
-            prefix: Filename prefix for extracted images
-            
-        Returns:
-            tuple: (success, message, extracted_files)
-        """
-        if not self.has_pdftoppm:
-            return False, "pdftoppm not found", []
-        
+    def extract_images_with_pymupdf(self, pdf_path, output_dir, dpi=300, format='png', prefix='page'):
+        """Extract images from PDF using PyMuPDF"""
+        if not self.has_pymupdf:
+            return False, "PyMuPDF not available", []
+
         try:
-            # Get page count for progress tracking
             pdf_info = self.get_pdf_info(pdf_path)
             if pdf_info['page_count'] == 0:
                 return False, "Could not determine PDF page count", []
-            
-            # Create output directory if it doesn't exist
+
             os.makedirs(output_dir, exist_ok=True)
-            
-            # Prepare the command
-            cmd = [
-                'pdftoppm',
-                '-' + format,  # Output format
-                f'-r{dpi}',    # Resolution
-                pdf_path,      # Input PDF
-                os.path.join(output_dir, prefix)  # Output prefix
-            ]
-            
-            # Start progress tracker
+
             progress = ProgressTracker(pdf_info['page_count'], "Extracting PDF pages").start()
-            
-            # Instead of running all at once, process page by page to show progress
+
             extracted_files = []
-            
-            for i in range(1, pdf_info['page_count'] + 1):
-                # Poppler names files with 1-based index
-                expected_file = os.path.join(output_dir, f"{prefix}-{i:03d}.{format}")
-                
-                # Skip if file already exists
+            doc = fitz.open(pdf_path)
+
+            for i in range(doc.page_count):
+                expected_file = os.path.join(output_dir, f"{prefix}-{i+1:03d}.{format}")
+
                 if os.path.exists(expected_file):
                     extracted_files.append(expected_file)
                     progress.update(len(extracted_files))
                     continue
-                
-                # Process just this page
-                page_cmd = cmd + ['-f', str(i), '-l', str(i)]
-                
-                result = subprocess.run(
-                    page_cmd,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    text=True,
-                    check=False
-                )
-                
-                if result.returncode != 0:
-                    print(f"Warning: Error processing page {i}: {result.stderr}")
-                    continue
-                
-                # Check if file was created
-                if os.path.exists(expected_file):
-                    extracted_files.append(expected_file)
-                    progress.update(len(extracted_files))
-            
+
+                page = doc.load_page(i)
+                pix = page.get_pixmap(dpi=dpi)
+                pix.save(expected_file)
+                extracted_files.append(expected_file)
+                progress.update(len(extracted_files))
+
+            doc.close()
             progress.finish()
-            
+
             if not extracted_files:
                 return False, "No images were extracted", []
-            
+
             return True, f"Successfully extracted {len(extracted_files)} images", extracted_files
-        
-        except Exception as e:
-            return False, f"Exception during image extraction: {str(e)}", []
-    
-    def extract_images_with_pdf2image(self, pdf_path, output_dir, dpi=300, format='png', prefix='page'):
-        """
-        Extract images from PDF using pdf2image library
-        
-        Args:
-            pdf_path: Path to the PDF file
-            output_dir: Directory to save extracted images
-            dpi: Resolution in dots per inch
-            format: Output image format (png, jpg, etc.)
-            prefix: Filename prefix for extracted images
-            
-        Returns:
-            tuple: (success, message, extracted_files)
-        """
-        if not self.has_pdf2image:
-            return False, "pdf2image library not found", []
-        
-        try:
-            from pdf2image import convert_from_path
-            
-            # Get page count for progress tracking
-            pdf_info = self.get_pdf_info(pdf_path)
-            if pdf_info['page_count'] == 0:
-                return False, "Could not determine PDF page count", []
-            
-            # Create output directory if it doesn't exist
-            os.makedirs(output_dir, exist_ok=True)
-            
-            # Start progress tracker
-            progress = ProgressTracker(pdf_info['page_count'], "Extracting PDF pages").start()
-            
-            # Convert PDF to images
-            images = convert_from_path(
-                pdf_path,
-                dpi=dpi,
-                fmt=format,
-                output_folder=output_dir,
-                output_file=prefix,
-                paths_only=True
-            )
-            
-            # Update progress
-            progress.update(len(images), force=True)
-            progress.finish()
-            
-            if not images:
-                return False, "No images were extracted", []
-            
-            return True, f"Successfully extracted {len(images)} images", images
-        
+
         except Exception as e:
             return False, f"Exception during image extraction: {str(e)}", []
     
@@ -244,18 +137,4 @@ class PDFExtractor:
         Returns:
             tuple: (success, message, extracted_files)
         """
-        # Try pdf2image first if available
-        if self.has_pdf2image:
-            success, message, files = self.extract_images_with_pdf2image(
-                pdf_path, output_dir, dpi, format, prefix
-            )
-            if success:
-                return success, message, files
-        
-        # Fall back to pdftoppm
-        if self.has_pdftoppm:
-            return self.extract_images_with_poppler(
-                pdf_path, output_dir, dpi, format, prefix
-            )
-        
-        return False, "No PDF extraction methods available", []
+        return self.extract_images_with_pymupdf(pdf_path, output_dir, dpi, format, prefix)
