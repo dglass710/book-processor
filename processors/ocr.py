@@ -4,13 +4,21 @@ OCR module for extracting text from images
 import os
 import subprocess
 from pathlib import Path
+from concurrent.futures import ProcessPoolExecutor, as_completed
 import sys
-import os
 
 # Add parent directory to path to allow imports
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))  
 from utils.file_utils import check_command_exists
 from utils.progress import ProgressTracker
+
+
+def _process_image_worker(args):
+    """Helper function to run OCR in a separate process."""
+    image_path, output_path, language, config = args
+    proc = OCRProcessor()
+    success, message = proc.process_image(image_path, output_path, language, config)
+    return image_path, output_path, success, message
 
 
 class OCRProcessor:
@@ -158,7 +166,7 @@ class OCRProcessor:
     
     def process_images(self, image_paths, output_dir, language='eng', config='', prefix='page'):
         """
-        Process multiple images with OCR
+        Process multiple images sequentially with OCR
         
         Args:
             image_paths: List of paths to image files
@@ -223,4 +231,54 @@ class OCRProcessor:
                 processed_files
             )
         
+        return True, f"OCR completed successfully for all {len(image_paths)} images", processed_files
+
+    def process_images_parallel(self, image_paths, output_dir, language='eng', config='', prefix='page', max_workers=None):
+        """Process multiple images in parallel using multiple CPU cores."""
+        if not self.has_tesseract:
+            return False, "Tesseract OCR not found", []
+
+        os.makedirs(output_dir, exist_ok=True)
+
+        tasks = []
+        for i, image_path in enumerate(image_paths):
+            try:
+                filename = os.path.basename(image_path)
+                name_parts = os.path.splitext(filename)[0].split('-')
+                if len(name_parts) > 1 and name_parts[-1].isdigit():
+                    page_num = int(name_parts[-1])
+                    output_filename = f"{prefix}-{page_num:03d}"
+                else:
+                    output_filename = f"{prefix}-{i+1:03d}"
+            except Exception:
+                output_filename = f"{prefix}-{i+1:03d}"
+
+            output_path = os.path.join(output_dir, output_filename)
+            tasks.append((image_path, output_path, language, config))
+
+        processed_files = []
+        failed_files = []
+
+        progress = ProgressTracker(len(tasks), "Processing OCR").start()
+
+        with ProcessPoolExecutor(max_workers=max_workers) as executor:
+            future_to_task = {executor.submit(_process_image_worker, t): t for t in tasks}
+            for future in as_completed(future_to_task):
+                image_path, output_path, success, message = future.result()
+                if success:
+                    processed_files.append(f"{output_path}.txt")
+                else:
+                    failed_files.append((image_path, message))
+                progress.update()
+
+        progress.finish()
+
+        if failed_files:
+            failures = len(failed_files)
+            return (
+                len(processed_files) > 0,
+                f"OCR completed with {failures} failures out of {len(image_paths)} images",
+                processed_files,
+            )
+
         return True, f"OCR completed successfully for all {len(image_paths)} images", processed_files
