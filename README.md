@@ -10,8 +10,8 @@ A comprehensive Python tool to automate the workflow of converting DJVU/PDF file
 
 ## Features
 
-- Convert DJVU files to PDF (using djvulibre)
-- Extract PNG images from PDF (using poppler or pdf2image)
+- Convert DJVU files to PDF (using PyMuPDF)
+- Extract PNG images from PDF (using PyMuPDF)
 - Perform OCR on images to extract text (using tesseract)
 - Organize text files into chapters with proper formatting
 - Group chapters into combined files optimizing for file size
@@ -23,42 +23,38 @@ A comprehensive Python tool to automate the workflow of converting DJVU/PDF file
 
 ### External Dependencies
 
-- **djvulibre**: For DJVU to PDF conversion
-- **poppler-utils**: For PDF to PNG conversion
 - **tesseract-ocr**: For OCR processing
 
 ### Python Dependencies
 
 - PyPDF2
-- pdf2image
+- PyMuPDF
 
 ## Installation
 
 1. Install external dependencies:
 
    **Windows:**
-   - djvulibre: Download from [SourceForge](https://sourceforge.net/projects/djvu/files/DjVuLibre_Windows/)
-   - poppler: Download from [Poppler for Windows](http://blog.alivate.com.au/poppler-windows/)
    - tesseract: Download from [UB-Mannheim Tesseract](https://github.com/UB-Mannheim/tesseract/wiki)
 
    **macOS:**
    ```bash
-   brew install djvulibre poppler tesseract
+   brew install tesseract
    ```
 
    **Linux (Debian/Ubuntu):**
    ```bash
-   sudo apt-get install djvulibre-bin poppler-utils tesseract-ocr
+   sudo apt-get install tesseract-ocr
    ```
 
    **Linux (Fedora):**
    ```bash
-   sudo dnf install djvulibre poppler-utils tesseract
+   sudo dnf install tesseract
    ```
 
 2. Install Python dependencies:
    ```bash
-   pip install PyPDF2 pdf2image
+   pip install PyPDF2 PyMuPDF
    ```
 
 ## Usage

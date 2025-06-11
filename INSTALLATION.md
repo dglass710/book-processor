@@ -18,34 +18,13 @@ If you have Chocolatey installed, you can install all dependencies with administ
 2. Run the installer and make sure to check "Add to PATH" during installation
 3. Verify installation by opening a new command prompt and typing: `tesseract --version`
 
-### Poppler Utils
-
-1. Download the latest release from [Poppler for Windows](http://blog.alivate.com.au/poppler-windows/)
-2. Extract the ZIP file to a location on your computer (e.g., `C:\Program Files\poppler`)
-3. Add the `bin` directory to your PATH:
-   - Search for "Environment Variables" in Windows search
-   - Click "Edit the system environment variables"
-   - Click "Environment Variables"
-   - Under "System variables", find "Path" and click "Edit"
-   - Click "New" and add the path to the bin directory (e.g., `C:\Program Files\poppler\bin`)
-   - Click "OK" on all dialogs
-4. Verify installation by opening a new command prompt and typing: `pdftoppm -v`
-
-### DjVuLibre
-
-1. Download the installer from [DjVuLibre SourceForge](https://sourceforge.net/projects/djvu/files/DjVuLibre_Windows/)
-2. Run the installer
-3. Add the installation directory to your PATH (similar to Poppler)
-4. Verify installation by opening a new command prompt and typing: `ddjvu --help`
 
 ## Verifying Installation
 
-After installing all dependencies, run the following commands to verify they are properly installed:
+After installing all dependencies, run the following command to verify Tesseract is installed:
 
 ```bash
 tesseract --version
-pdftoppm -v
-ddjvu --help
 ```
 
 If all commands return version information or help text, the dependencies are correctly installed.
@@ -55,7 +34,7 @@ If all commands return version information or help text, the dependencies are co
 The Book Processor also requires Python dependencies. Install them with:
 
 ```bash
-pip install PyPDF2 pdf2image
+pip install PyPDF2 PyMuPDF
 ```
 
 ## Troubleshooting
