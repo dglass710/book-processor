@@ -97,13 +97,54 @@ def validate_pdf_integrity(pdf_path):
 
 
 def validate_djvu_integrity(djvu_path):
-    """Check if a DJVU file is valid using PyMuPDF"""
+    """Check if a DJVU file is valid using djvused"""
+    import subprocess
+    import os
+    
+    # Check if the file exists first
+    if not os.path.exists(djvu_path):
+        return False, f"DJVU file does not exist: {djvu_path}"
+    
+    # Try to find djvused in common locations
+    djvused_paths = [
+        "djvused",  # Try from PATH first
+        os.path.join(r"C:\Program Files\DjVuLibre", "djvused.exe"),
+        os.path.join(r"C:\Program Files (x86)\DjVuLibre", "djvused.exe"),
+        os.path.join(r"C:\Program Files\DjVuLibre\bin", "djvused.exe"),
+        os.path.join(r"C:\Program Files (x86)\DjVuLibre\bin", "djvused.exe")
+    ]
+    
+    djvused_exe = None
+    for path in djvused_paths:
+        try:
+            if path == "djvused" or os.path.exists(path):
+                djvused_exe = path
+                break
+        except:
+            continue
+    
+    if not djvused_exe:
+        return False, "Could not find djvused executable. Please install DjVuLibre."
+    
     try:
-        import fitz
-        doc = fitz.open(djvu_path)
-        page_count = doc.page_count
-        doc.close()
-        return True, f"DJVU is valid with {page_count} pages"
+        # Run djvused to get page count
+        result = subprocess.run(
+            [djvused_exe, "-e", "n", djvu_path],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=False
+        )
+        
+        if result.returncode == 0:
+            try:
+                page_count = int(result.stdout.strip())
+                return True, f"DJVU is valid with {page_count} pages"
+            except ValueError:
+                return True, "DJVU file is valid (page count unknown)"
+        else:
+            error_msg = result.stderr.strip() if result.stderr else "Unknown error"
+            return False, f"DJVU validation failed: {error_msg}"
     except Exception as e:
         return False, f"Could not validate DJVU file: {str(e)}"
 

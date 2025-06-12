@@ -352,34 +352,57 @@ class CombinedChapterOrganizer:
                 with open(output_path, 'w', encoding='utf-8') as outfile:
                     # Write combined file header with both page numbering systems
                     outfile.write(f"{output_filename} - {description} (Book Pages {book_start_page}-{book_end_page}, PDF Pages {start_page}-{end_page})\n\n")
+                    
+                    # Process each chapter
+                    for chapter in group_chapters:
+                        chapter_num = chapter['number']
+                        chapter_filename = f"chapter_{chapter_num:02d}.txt"
+                        chapter_path = os.path.join(chapters_dir, chapter_filename)
+                        
+                        try:
+                            with open(chapter_path, 'r', encoding='utf-8') as infile:
+                                content = infile.read()
+                                outfile.write(content)
+                                outfile.write("\n\n")
+                        except FileNotFoundError:
+                            outfile.write(f"[WARNING: Chapter {chapter_num} content not found]\n\n")
+                        except UnicodeDecodeError:
+                            # Try with different encoding if UTF-8 fails
+                            try:
+                                with open(chapter_path, 'r', encoding='latin-1') as infile:
+                                    content = infile.read()
+                                    outfile.write(content)
+                                    outfile.write("\n\n")
+                            except Exception:
+                                outfile.write(f"[WARNING: Chapter {chapter_num} content could not be decoded]\n\n")
             else:
                 # Open output file
                 with open(output_path, 'w', encoding='utf-8') as outfile:
                     # Write combined file header with just PDF page numbers
                     outfile.write(f"{output_filename} - {description} (Pages {start_page}-{end_page})\n\n")
-                
-                # Process each chapter
-                for chapter in group_chapters:
-                    chapter_num = chapter['number']
-                    chapter_filename = f"chapter_{chapter_num:02d}.txt"
-                    chapter_path = os.path.join(chapters_dir, chapter_filename)
                     
-                    try:
-                        with open(chapter_path, 'r', encoding='utf-8') as infile:
-                            content = infile.read()
-                            outfile.write(content)
-                            outfile.write("\n\n")
-                    except FileNotFoundError:
-                        outfile.write(f"[WARNING: Chapter {chapter_num} content not found]\n\n")
-                    except UnicodeDecodeError:
-                        # Try with different encoding if UTF-8 fails
+                    # Process each chapter
+                    for chapter in group_chapters:
+                        chapter_num = chapter['number']
+                        chapter_filename = f"chapter_{chapter_num:02d}.txt"
+                        chapter_path = os.path.join(chapters_dir, chapter_filename)
+                        
                         try:
-                            with open(chapter_path, 'r', encoding='latin-1') as infile:
+                            with open(chapter_path, 'r', encoding='utf-8') as infile:
                                 content = infile.read()
                                 outfile.write(content)
                                 outfile.write("\n\n")
-                        except Exception:
-                            outfile.write(f"[WARNING: Chapter {chapter_num} content could not be decoded]\n\n")
+                        except FileNotFoundError:
+                            outfile.write(f"[WARNING: Chapter {chapter_num} content not found]\n\n")
+                        except UnicodeDecodeError:
+                            # Try with different encoding if UTF-8 fails
+                            try:
+                                with open(chapter_path, 'r', encoding='latin-1') as infile:
+                                    content = infile.read()
+                                    outfile.write(content)
+                                    outfile.write("\n\n")
+                            except Exception:
+                                outfile.write(f"[WARNING: Chapter {chapter_num} content could not be decoded]\n\n")
             
             return True, f"Successfully created combined file {output_filename}", output_path
         

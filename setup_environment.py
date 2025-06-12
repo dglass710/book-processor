@@ -55,32 +55,59 @@ def main():
     print("Setting up environment for Book Processor")
     print("=" * 80)
     
-    # Add Tesseract to PATH if it exists
-    tesseract_path = r"C:\Program Files\Tesseract-OCR"
-    if os.path.exists(tesseract_path):
-        print(f"Found Tesseract at {tesseract_path}")
-        os.environ["PATH"] = tesseract_path + os.pathsep + os.environ.get("PATH", "")
-        print("Added Tesseract to PATH")
-    else:
-        print(f"Tesseract not found at {tesseract_path}")
+    # Find and add Tesseract to PATH
+    tesseract_paths = [
+        r"C:\Program Files\Tesseract-OCR",
+        r"C:\Program Files (x86)\Tesseract-OCR"
+    ]
+    tesseract_found = False
+    for tesseract_path in tesseract_paths:
+        if os.path.exists(tesseract_path):
+            print(f"Found Tesseract at {tesseract_path}")
+            os.environ["PATH"] = tesseract_path + os.pathsep + os.environ.get("PATH", "")
+            print("Added Tesseract to PATH")
+            tesseract_found = True
+            break
+    
+    if not tesseract_found:
+        print("Tesseract not found in standard locations")
         print("Please install Tesseract from https://github.com/UB-Mannheim/tesseract/wiki")
 
-    # Add DjVuLibre to PATH if it exists
-    djvu_path = r"C:\Program Files\DjVuLibre"
-    if os.path.exists(djvu_path):
-        print(f"Found DjVuLibre at {djvu_path}")
-        os.environ["PATH"] = djvu_path + os.pathsep + os.environ.get("PATH", "")
-        print("Added DjVuLibre to PATH")
-    else:
-        print(f"DjVuLibre not found at {djvu_path}")
-        print("Please install DjVuLibre from https://sourceforge.net/projects/djvu/")
+    # Find and add DjVuLibre to PATH
+    djvulibre_paths = [
+        r"C:\Program Files\DjVuLibre",
+        r"C:\Program Files (x86)\DjVuLibre"
+    ]
+    djvulibre_found = False
+    for djvu_path in djvulibre_paths:
+        if os.path.exists(djvu_path):
+            print(f"Found DjVuLibre at {djvu_path}")
+            os.environ["PATH"] = djvu_path + os.pathsep + os.environ.get("PATH", "")
+            print("Added DjVuLibre to PATH")
+            djvulibre_found = True
+            break
+    
+    if not djvulibre_found:
+        print("DjVuLibre not found in standard locations")
+        print("Please install DjVuLibre from https://sourceforge.net/projects/djvu/files/DjVuLibre_Windows/")
     
     # Verify dependencies
     print("\nVerifying dependencies:")
     tesseract_ok = check_dependency("Tesseract", "tesseract")
-    ddjvu_ok = check_dependency("ddjvu", "ddjvu")
     
-    if not tesseract_ok or not ddjvu_ok:
+    # Check for DjVuLibre tools - try both djvused and ddjvu
+    djvused_ok = check_dependency("djvused", "djvused")
+    if not djvused_ok:
+        # Only check ddjvu if djvused is not available
+        ddjvu_ok = check_dependency("ddjvu", "ddjvu")
+    else:
+        # If djvused is available, we don't need to check ddjvu
+        ddjvu_ok = True
+        print("[INFO] djvused is available, skipping ddjvu check")
+    
+    djvulibre_ok = djvused_ok  # Consider DjVuLibre OK if djvused works (primary tool)
+    
+    if not tesseract_ok or not djvulibre_ok:
         print("\nSome dependencies are missing or not working properly.")
         print("Would you like to continue anyway? (y/N)")
         response = input().strip().lower()
