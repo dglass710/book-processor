@@ -8,11 +8,13 @@ A comprehensive Python tool to automate the workflow of converting DJVU/PDF file
 - **macOS-like Directory Naming**: Create uniquely named directories with incremented suffixes (e.g., "Book Name (1)") when processing the same book multiple times
 - **Automated Processing**: Scripts for automating the book processing workflow with predefined inputs
 - **Parallel OCR Processing**: Utilize multiple CPU cores to speed up OCR on large books
+- **Parallel PNG Extraction**: Create PNG pages faster using multiple CPU cores
 
 ## Features
 
 - Convert DJVU files to PDF (using PyMuPDF)
 - Extract PNG images from PDF (using PyMuPDF)
+- Accelerated PNG extraction with parallel processing
 - Perform OCR on images to extract text (using tesseract)
 - Accelerated OCR with parallel processing
 - Organize text files into chapters with proper formatting

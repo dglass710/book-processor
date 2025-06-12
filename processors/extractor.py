@@ -3,6 +3,7 @@ Extractor module for converting PDF pages to images
 """
 import os
 import sys
+from concurrent.futures import ProcessPoolExecutor, as_completed
 import fitz  # PyMuPDF
 import PyPDF2
 
@@ -10,6 +11,22 @@ import PyPDF2
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from utils.progress import ProgressTracker
 
+
+def _extract_page_worker(args):
+    """Helper function to extract a single page as an image."""
+    pdf_path, page_num, output_dir, dpi, fmt, prefix = args
+    try:
+        doc = fitz.open(pdf_path)
+        page = doc.load_page(page_num)
+        pix = page.get_pixmap(dpi=dpi)
+        output_file = os.path.join(
+            output_dir, f"{prefix}-{page_num + 1:03d}.{fmt}"
+        )
+        pix.save(output_file)
+        doc.close()
+        return page_num, output_file, True, ""
+    except Exception as e:
+        return page_num, None, False, str(e)
 
 class PDFExtractor:
     """
@@ -122,6 +139,67 @@ class PDFExtractor:
 
         except Exception as e:
             return False, f"Exception during image extraction: {str(e)}", []
+
+    def extract_images_parallel(
+        self,
+        pdf_path,
+        output_dir,
+        dpi=300,
+        format='png',
+        prefix='page',
+        max_workers=None,
+    ):
+        """Extract images from PDF using multiple CPU cores."""
+        if not self.has_pymupdf:
+            return False, "PyMuPDF not available", []
+
+        pdf_info = self.get_pdf_info(pdf_path)
+        if pdf_info['page_count'] == 0:
+            return False, "Could not determine PDF page count", []
+
+        os.makedirs(output_dir, exist_ok=True)
+
+        total_pages = pdf_info['page_count']
+        extracted_files = []
+        failed_tasks = []
+        tasks = []
+
+        progress = ProgressTracker(total_pages, "Extracting PDF pages").start()
+
+        for i in range(total_pages):
+            expected_file = os.path.join(output_dir, f"{prefix}-{i+1:03d}.{format}")
+            if os.path.exists(expected_file):
+                extracted_files.append(expected_file)
+                progress.update(len(extracted_files))
+            else:
+                tasks.append((pdf_path, i, output_dir, dpi, format, prefix))
+
+        completed = len(extracted_files)
+        if tasks:
+            with ProcessPoolExecutor(max_workers=max_workers) as executor:
+                future_to_task = {executor.submit(_extract_page_worker, t): t for t in tasks}
+                for future in as_completed(future_to_task):
+                    page_num, output_file, success, error = future.result()
+                    completed += 1
+                    if success:
+                        extracted_files.append(output_file)
+                    else:
+                        failed_tasks.append((page_num, error))
+                    progress.update(completed)
+
+        progress.finish()
+
+        extracted_files.sort()
+
+        if failed_tasks:
+            failures = len(failed_tasks)
+            return (
+                len(extracted_files) > 0,
+                f"Extraction completed with {failures} failures out of {total_pages} pages",
+                extracted_files,
+            )
+
+        return True, f"Successfully extracted {len(extracted_files)} images", extracted_files
     
     def extract_images(self, pdf_path, output_dir, dpi=300, format='png', prefix='page'):
         """
@@ -137,4 +215,4 @@ class PDFExtractor:
         Returns:
             tuple: (success, message, extracted_files)
         """
-        return self.extract_images_with_pymupdf(pdf_path, output_dir, dpi, format, prefix)
+        return self.extract_images_parallel(pdf_path, output_dir, dpi, format, prefix)

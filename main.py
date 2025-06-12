@@ -423,8 +423,12 @@ def main():
     progress.start_step()
     print(f"\nExtracting PNG images from PDF to {dirs['images']}")
     
-    success, message, image_files = extractor.extract_images(
-        pdf_path, dirs['images'], dpi=300, format='png', prefix='page'
+    success, message, image_files = extractor.extract_images_parallel(
+        pdf_path,
+        dirs['images'],
+        dpi=300,
+        format='png',
+        prefix='page',
     )
     
     if not success:
