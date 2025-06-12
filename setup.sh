@@ -6,7 +6,7 @@
 
 # Install system dependencies
 apt-get update
-apt-get install -y tesseract-ocr python3 python3-pip
+apt-get install -y tesseract-ocr djvulibre-bin python3 python3-pip
 
 # Install Python dependencies
 pip install PyMuPDF>=1.21.1 Pillow>=9.5.0

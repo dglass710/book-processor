@@ -42,10 +42,14 @@ def check_dependencies():
         tuple: (success, missing_dependencies)
     """
     missing = []
-    
+
     # Check for tesseract
     if not check_command_exists('tesseract'):
         missing.append('tesseract')
+
+    # Check for djvulibre (ddjvu)
+    if not check_command_exists('ddjvu'):
+        missing.append('ddjvu')
     
     # Check for Python libraries
     try:
@@ -85,6 +89,16 @@ def install_dependencies_guide(missing_dependencies):
             else:
                 instructions += "- Linux (Debian/Ubuntu): Run 'sudo apt-get install tesseract-ocr'\n"
                 instructions += "- Linux (Fedora): Run 'sudo dnf install tesseract'\n"
+
+        elif dep == 'ddjvu':
+            instructions += "DjVuLibre Installation (ddjvu):\n"
+            if platform == 'windows':
+                instructions += "- Windows: Download from https://sourceforge.net/projects/djvu/\n"
+            elif platform == 'macos':
+                instructions += "- macOS: Run 'brew install djvulibre'\n"
+            else:
+                instructions += "- Linux (Debian/Ubuntu): Run 'sudo apt-get install djvulibre-bin'\n"
+                instructions += "- Linux (Fedora): Run 'sudo dnf install djvulibre'\n"
 
         elif dep == 'PyPDF2':
             instructions += "PyPDF2 Python Library:\n"

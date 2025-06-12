@@ -6,7 +6,7 @@
 
 # Install system dependencies
 dnf check-update
-dnf install -y tesseract python3 python3-pip
+dnf install -y tesseract djvulibre python3 python3-pip
 
 # Install Python dependencies
 pip install PyMuPDF>=1.21.1 Pillow>=9.5.0

@@ -64,13 +64,24 @@ def main():
     else:
         print(f"Tesseract not found at {tesseract_path}")
         print("Please install Tesseract from https://github.com/UB-Mannheim/tesseract/wiki")
+
+    # Add DjVuLibre to PATH if it exists
+    djvu_path = r"C:\Program Files\DjVuLibre"
+    if os.path.exists(djvu_path):
+        print(f"Found DjVuLibre at {djvu_path}")
+        os.environ["PATH"] = djvu_path + os.pathsep + os.environ.get("PATH", "")
+        print("Added DjVuLibre to PATH")
+    else:
+        print(f"DjVuLibre not found at {djvu_path}")
+        print("Please install DjVuLibre from https://sourceforge.net/projects/djvu/")
     
     # Verify dependencies
     print("\nVerifying dependencies:")
     tesseract_ok = check_dependency("Tesseract", "tesseract")
+    ddjvu_ok = check_dependency("ddjvu", "ddjvu")
     
-    if not tesseract_ok:
-        print("\nTesseract is missing or not working properly.")
+    if not tesseract_ok or not ddjvu_ok:
+        print("\nSome dependencies are missing or not working properly.")
         print("Would you like to continue anyway? (y/N)")
         response = input().strip().lower()
         if response != 'y':
