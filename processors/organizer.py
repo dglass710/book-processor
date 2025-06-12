@@ -581,18 +581,18 @@ class CombinedChapterOrganizer:
             with open(instructions_path, 'w', encoding='utf-8') as outfile:
                 outfile.write(f"You are a subject matter expert on *{book_title}*, using {num_combined_files} uploaded text files (combined_01.txt to combined_{num_combined_files:02d}.txt), each containing one or more of the book's {num_chapters} chapters, and an index file (index.txt) mapping chapters to their respective files.\n\n")
                 outfile.write("You must follow this non-negotiable, three-step workflow for every query:\n\n")
-                outfile.write("1. **READ index.txt FIRST**: Immediately open index.txt to identify the correct combined file(s) and chapter(s) for the user's query using keywords, chapter titles, or subtopics. Never search other files without this mapping. Example: \"trichomes\" → Chapter 8 → combined_02.txt; \"greenhouses\" → Chapter 11 → combined_03.txt.\n")
-                outfile.write("2. **SEARCH ONLY THE RELEVANT FILES**: Search strictly within the identified file(s) and chapter(s), using [BEGIN PAGE X] and [END PAGE X] markers to locate content.\n")
+                outfile.write("1. **READ index.txt FIRST**: Immediately open index.txt to identify the correct chapter(s) (and their combined file if needed) for the user's query using keywords, chapter titles, or subtopics. Never search other files without this mapping. Example: \"trichomes\" → Chapter 8 → combined_02.txt; \"greenhouses\" → Chapter 11 → combined_03.txt.\n")
+                outfile.write("2. **SEARCH ONLY THE RELEVANT CHAPTERS**: Search strictly within the identified chapter(s) and corresponding file(s), using [BEGIN PAGE X] and [END PAGE X] markers to locate content.\n")
                 # Different citation format instructions based on whether there's a page offset
                 if has_page_offset:
-                    outfile.write("3. **RESPOND WITH PRECISE DUAL-FORMAT CITATIONS**: Quote or paraphrase only from the relevant chapter(s), citing the exact file and the narrowest possible page range that directly covers the topic. You MUST include BOTH page numbering systems in every citation (e.g., \"Source: combined_02.txt, Book Pages 75-77, PDF Pages 85-87\"). Broad or generic page citations are not acceptable.\n\n")
+                    outfile.write("3. **RESPOND WITH PRECISE DUAL-FORMAT CITATIONS**: Quote or paraphrase only from the relevant chapter(s), citing the chapter and the narrowest possible page range that directly covers the topic. You MUST include BOTH page numbering systems in every citation (e.g., \"Source: Chapter 8, Book Pages 75-77, PDF Pages 85-87\"). Broad or generic page citations are not acceptable.\n\n")
                 else:
-                    outfile.write("3. **RESPOND WITH PRECISE CITATIONS**: Quote or paraphrase only from the relevant chapter(s), citing the exact file and the narrowest possible page range that directly covers the topic (e.g., \"Source: combined_02.txt, Pages 85–87\"). Broad or generic page citations are not acceptable.\n\n")
-                outfile.write("**Diagnostic Output Requirement:** Every response must include the statement: \"Index consulted: [list of file(s) and chapter(s) identified, e.g., combined_02.txt, Chapter 8].\"\n\n")
+                    outfile.write("3. **RESPOND WITH PRECISE CITATIONS**: Quote or paraphrase only from the relevant chapter(s), citing the chapter and the narrowest possible page range that directly covers the topic (e.g., \"Source: Chapter 8, Pages 85–87\"). Broad or generic page citations are not acceptable.\n\n")
+                outfile.write("**Diagnostic Output Requirement:** Every response must include the statement: \"Index consulted: [list of chapter(s) identified, e.g., Chapter 8].\"\n\n")
                 outfile.write("**What You Must Not Do:**\n")
                 outfile.write("- Do NOT use external information or make assumptions not present in the files.\n")
                 outfile.write("- Do NOT reference visuals or diagrams, as this is a text-only source.\n")
-                outfile.write("- Do NOT cite incorrect files/chapters (e.g., combined_10.txt for greenhouses).\n")
+                outfile.write("- Do NOT cite incorrect chapters (e.g., citing Chapter 10 for greenhouses).\n")
                 # Different citation warning based on whether there's a page offset
                 if has_page_offset:
                     outfile.write("- Do NOT use overly broad citations (e.g., Book Pages 75-98, PDF Pages 85-108). Use only the minimal span of pages necessary.\n")
