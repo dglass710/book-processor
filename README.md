@@ -12,7 +12,7 @@ A comprehensive Python tool to automate the workflow of converting DJVU/PDF file
 
 ## Features
 
-- Convert DJVU files to PDF (using PyMuPDF)
+- Convert DJVU files to PDF (using DjVuLibre's `ddjvu`)
 - Extract PNG images from PDF (using PyMuPDF)
 - Accelerated PNG extraction with parallel processing
 - Perform OCR on images to extract text (using tesseract)
@@ -28,6 +28,7 @@ A comprehensive Python tool to automate the workflow of converting DJVU/PDF file
 ### External Dependencies
 
 - **tesseract-ocr**: For OCR processing
+- **djvulibre**: Provides the `ddjvu` tool for DJVU to PDF conversion
 
 ### Python Dependencies
 
@@ -40,20 +41,21 @@ A comprehensive Python tool to automate the workflow of converting DJVU/PDF file
 
    **Windows:**
    - tesseract: Download from [UB-Mannheim Tesseract](https://github.com/UB-Mannheim/tesseract/wiki)
+   - djvulibre: Download from [SourceForge](https://sourceforge.net/projects/djvu/)
 
    **macOS:**
    ```bash
-   brew install tesseract
+   brew install tesseract djvulibre
    ```
 
    **Linux (Debian/Ubuntu):**
    ```bash
-   sudo apt-get install tesseract-ocr
+   sudo apt-get install tesseract-ocr djvulibre-bin
    ```
 
    **Linux (Fedora):**
    ```bash
-   sudo dnf install tesseract
+   sudo dnf install tesseract djvulibre
    ```
 
 2. Install Python dependencies:

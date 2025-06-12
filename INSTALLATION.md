@@ -18,13 +18,20 @@ If you have Chocolatey installed, you can install all dependencies with administ
 2. Run the installer and make sure to check "Add to PATH" during installation
 3. Verify installation by opening a new command prompt and typing: `tesseract --version`
 
+### DjVuLibre (ddjvu)
+
+1. Download the installer from [DjVuLibre SourceForge](https://sourceforge.net/projects/djvu/)
+2. Run the installer and ensure the tools are added to your PATH
+3. Verify installation with: `ddjvu --version`
+
 
 ## Verifying Installation
 
-After installing all dependencies, run the following command to verify Tesseract is installed:
+After installing all dependencies, run the following commands to verify the tools are installed:
 
 ```bash
 tesseract --version
+ddjvu --version
 ```
 
 If all commands return version information or help text, the dependencies are correctly installed.

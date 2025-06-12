@@ -13,16 +13,34 @@ IF EXIST "C:\Program Files\Tesseract-OCR\tesseract.exe" (
     echo Please install Tesseract from https://github.com/UB-Mannheim/tesseract/wiki
 )
 
+echo Checking for DjVuLibre...
+IF EXIST "C:\Program Files\DjVuLibre\ddjvu.exe" (
+    echo Found DjVuLibre at C:\Program Files\DjVuLibre
+    SET "PATH=C:\Program Files\DjVuLibre;%PATH%"
+    echo Added DjVuLibre to PATH
+) ELSE (
+    echo DjVuLibre not found at C:\Program Files\DjVuLibre
+    echo Please install DjVuLibre from https://sourceforge.net/projects/djvu/
+)
+
 
 REM Verify dependencies are in PATH
 echo.
 echo Verifying dependencies...
 where tesseract 2>NUL
 IF %ERRORLEVEL% EQU 0 (
-    echo Tesseract is available: 
+    echo Tesseract is available:
     tesseract --version
 ) ELSE (
     echo Tesseract is not available in PATH
+)
+
+where ddjvu 2>NUL
+IF %ERRORLEVEL% EQU 0 (
+    echo ddjvu is available:
+    ddjvu --version
+) ELSE (
+    echo ddjvu is not available in PATH
 )
 
 

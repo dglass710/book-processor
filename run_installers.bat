@@ -11,6 +11,11 @@ start "" "c:\Users\dglas\Dropbox\Books\George F. Van Patten, aka Jorge Cervantes
 echo Please complete the Tesseract installation before continuing.
 pause
 
+echo Running DjVuLibre installer...
+start "" "c:\Users\dglas\Dropbox\Books\George F. Van Patten, aka Jorge Cervantes - The Cannabis Encyclopedia-Van Patten Publishing, USA (2015)\book_processor\dependencies\djvulibre-installer.exe"
+echo Please complete the DjVuLibre installation before continuing.
+pause
+
 
 echo.
 echo Installation complete!
