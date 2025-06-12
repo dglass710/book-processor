@@ -1,0 +1,117 @@
+C:\Users\dglas\Dropbox\Books\Cannabis_Encyclopedia.djvu
+The Cannabis Encyclopedia
+0
+13 23 33 41 49 61 73 85 99 123 137 151 173 203 215 227 253 303 327 333 349 395 407 449 507 533 557
+y
+Medical Cannabis
+Measuring Cannabinoids
+Medical Cannabis Varieties
+Cannabis Life Cycle
+Seeds & Seedlings
+Vegetative Growth
+Clones & Cloning
+Flowering
+Harvest, Drying & Curing
+Garden Rooms
+Greenhouses
+Outdoors
+Case Studies
+Preserving the Sanctuary
+Meters
+Air
+Light, Lamps & Electricity
+Soil
+Containers
+Water
+Nutrients
+Additives
+Container Culture & Hydroponics
+Diseases & Pests
+Breeding
+Medicinal Concentrates & Tinctures
+Cooking with Medicinal Cannabis
+Explores medical cannabis history, endocannabinoid system, CBD era, and anecdotal evidence.
+Details potency testing, lab selection, chromatography methods, and cannabis safety testing.
+Covers cannabis varieties, indica/sativa crosses, feminized, autoflowering, and high-CBD/THC strains.
+Describes cannabis life cycle, seeds, vegetative growth, flowering, and mother plants.
+Focuses on seed germination, planting, storage, and growing more female plants.
+Discusses transplanting, pruning, trellising, grafting, and stress in vegetative growth.
+Explains cloning techniques, mother plants, rooting hormones, and clone care.
+Details trichomes, pre-flowering, sinsemilla, calyx, colas, and rejuvenation.
+Covers harvest timing, manicuring, drying, curing, storage, and mold handling.
+Guides on setting up garden rooms, climate control, lighting, and water systems.
+Explores greenhouse siting, construction, coverings, climate control, and light deprivation.
+Discusses outdoor growing, climate, soil, irrigation, and garden maintenance.
+Presents case studies on indoor, LED/HPS, backyard, and commercial outdoor gardens.
+Addresses security, surveillance, odor control, and electrical safety for gardens.
+Covers air, electric, soil, water, nutrient meters, and equipment calibration.
+Details temperature, humidity, CO2 enrichment, ventilation, and air filtration.
+Explains light science, HID/LED systems, electrical safety, and power management.
+Discusses soil testing, composition, pH, amendments, and organic methods.
+Covers container types, sizing, root management, and drainage solutions.
+Explores water sources, pH, osmosis, plant uptake, and irrigation systems.
+Details macro/micro nutrients, fertilizers, organic options, and composting.
+Discusses hormones, enzymes, acids, growth factors, and beneficial organisms.
+Covers hydroponic systems, nutrient/pH management, medium selection, and maintenance.
+Explains disease/pest identification, prevention, control, and integrated management.
+Details plant genetics, breeding methods, seed production, and strain development.
+Covers extraction methods, concentrate types, tincture production, and safety.
+Explains decarboxylation, cooking methods, recipes, and beverages with cannabis.
+
+
+# First Aid Book Input
+C:\Users\dglas\Dropbox\Books\2012 RTE Manual.pdf
+Responding to Emergencies: Comprehensive First Aid/CPR/AED
+23
+y
+27 47 65 85 103 123 139 153 171 189 207 227 241 259 277 295 317 335 353 371 391 413 431 449
+y
+Preparing to Help
+Activating the Emergency Medical Services System
+Responding to an Emergency
+Finding the Problem
+Stopping Bleeding
+Bandaging Wounds
+CPR
+AED
+Choking
+Sudden Illness
+Shock
+Wound Care
+Burns
+Head and Spinal Injuries
+Chest, Abdominal and Pelvic Injuries
+Bone, Joint and Muscle Injuries
+Extremity Injuries
+Splinting Extremities
+Cold-Related Emergencies
+Heat-Related Emergencies
+Water-Related Emergencies
+Wilderness First Aid
+Poisoning
+Bites and Stings
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
