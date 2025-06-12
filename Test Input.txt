@@ -1,4 +1,3 @@
-# First Aid Book Input
 C:\Users\dglas\Dropbox\Books\2012 RTE Manual.pdf
 Responding to Emergencies: Comprehensive First Aid/CPR/AED
 23
@@ -55,7 +54,6 @@ Bites and Stings
 
 
 
-# Physics Book Input
 C:\Users\dglas\Dropbox\Books\College_Physics_2e PAUL PETER URONE and ROGER HINRICHS.pdf
 College Physics 2e
 18
@@ -131,7 +129,6 @@ Chapter 32 examines medical applications of nuclear physics, covering diagnostic
 Chapter 33 introduces particle physics, discussing the Yukawa particle, the four basic forces, particle accelerators, conservation laws, quarks, and grand unified theories (GUTs), with a glossary, summary, and exercises.
 Chapter 34 explores frontiers of physics, covering cosmology, particle physics, general relativity, quantum gravity, superstrings, dark matter, closure, complexity, chaos, high-temperature superconductors, and open questions, with a glossary, summary, and problems.
 
-# Python Textbook
 "C:\Users\dglas\Dropbox\Books\automate-the-boring-stuff-with-python-2nd-edition.pdf"
 AUTOMATE THE BORING STUFF WITH PYTHON
 3 21 57 77 111 129 161 187 201 231 249 267 301 329 347 371 389 415 447 473
@@ -176,7 +173,6 @@ Chapter 18 explores sending email and text messages with Python, covering the Gm
 Chapter 19 introduces image manipulation with Python’s Pillow module, covering image fundamentals like colors, RGBA values, and coordinates, and manipulating images by cropping, copying/pasting, resizing, rotating, flipping, and changing pixels, with a project to add a logo to images, and drawing shapes and text on images, followed by a summary, practice questions, and projects like Identifying Photo Folders.
 Chapter 20 covers GUI automation with Python’s pyautogui module, explaining how to control mouse movements, clicks, drags, and scrolling, as well as keyboard input and hotkey combinations, working with screenshots, image recognition, and window manipulation, with a project for an Automatic Form Filler and displaying message boxes, followed by a summary, practice questions, and projects like Looking Busy and Instant Messenger Bot.
 
-# Encyclopedia
 C:\Users\dglas\Dropbox\Books\Cannabis_Encyclopedia.djvu
 The Cannabis Encyclopedia
 0
@@ -236,5 +232,3 @@ Explains disease/pest identification, prevention, control, and integrated manage
 Details plant genetics, breeding methods, seed production, and strain development.
 Covers extraction methods, concentrate types, tincture production, and safety.
 Explains decarboxylation, cooking methods, recipes, and beverages with cannabis.
-
-# Updated on June 12, 2025
