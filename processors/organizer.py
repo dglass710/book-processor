@@ -581,7 +581,7 @@ class CombinedChapterOrganizer:
             with open(instructions_path, 'w', encoding='utf-8') as outfile:
                 outfile.write(f"You are a subject matter expert on *{book_title}*, using {num_combined_files} uploaded text files (combined_01.txt to combined_{num_combined_files:02d}.txt), each containing one or more of the book's {num_chapters} chapters, and an index file (index.txt) mapping chapters to their respective files.\n\n")
                 outfile.write("You must follow this non-negotiable, three-step workflow for every query:\n\n")
-                outfile.write("1. **READ index.txt FIRST**: Immediately open index.txt to identify the correct chapter(s) (and their combined file if needed) for the user's query using keywords, chapter titles, or subtopics. Never search other files without this mapping. Example: \"pruning\" → Chapter 8 → combined_02.txt; \"greenhouses\" → Chapter 11 → combined_03.txt.\n")
+                outfile.write("1. **READ index.txt FIRST**: Immediately open index.txt to identify the correct chapter(s) (and their combined file if needed) for the user's query using keywords, chapter titles, or subtopics. Never search other files without this mapping. Example: \"budget planning\" → Chapter 8 → combined_02.txt; \"marketing\" → Chapter 11 → combined_03.txt.\n")
                 outfile.write("2. **SEARCH ONLY THE RELEVANT CHAPTERS**: Search strictly within the identified chapter(s) and corresponding file(s), using [BEGIN PAGE X] and [END PAGE X] markers to locate content.\n")
                 # Different citation format instructions based on whether there's a page offset
                 if has_page_offset:
@@ -592,7 +592,7 @@ class CombinedChapterOrganizer:
                 outfile.write("**What You Must Not Do:**\n")
                 outfile.write("- Do NOT use external information or make assumptions not present in the files.\n")
                 outfile.write("- Do NOT reference visuals or diagrams, as this is a text-only source.\n")
-                outfile.write("- Do NOT cite incorrect chapters (e.g., citing Chapter 10 for greenhouses).\n")
+                outfile.write("- Do NOT cite incorrect chapters (e.g., citing Chapter 10 for marketing).\n")
                 # Different citation warning based on whether there's a page offset
                 if has_page_offset:
                     outfile.write("- Do NOT use overly broad citations (e.g., Book Pages 75-98, PDF Pages 85-108). Use only the minimal span of pages necessary.\n")
@@ -600,10 +600,10 @@ class CombinedChapterOrganizer:
                 else:
                     outfile.write("- Do NOT use overly broad citations (e.g., Pages 85–98). Use only the minimal span of pages necessary.\n\n")
                 outfile.write("**Tasks Supported:**\n")
-                outfile.write("- Answer gardening and plant care questions with pinpoint accuracy.\n")
+                outfile.write("- Answer questions with pinpoint accuracy.\n")
                 outfile.write("- Summarize chapters or topics clearly.\n")
                 outfile.write("- Create flashcards or multiple-choice quizzes with source citations.\n")
-                outfile.write("- Explain techniques (e.g., propagation, hydroponics) using clear language from the book.\n")
+                outfile.write("- Explain techniques or concepts using clear language from the text.\n")
                 outfile.write(f"- If a topic is not found in the {num_chapters} chapters, state: \"This information is not covered in {book_title}.\"\n\n")
                 outfile.write("**Document Structure Reminder:**\n")
                 outfile.write("- File headers show chapter ranges.\n")
