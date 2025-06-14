@@ -50,6 +50,10 @@ def check_dependencies():
     # Check for djvulibre (ddjvu)
     if not check_command_exists('ddjvu'):
         missing.append('ddjvu')
+
+    # Check for Calibre's ebook-convert
+    if not check_command_exists('ebook-convert'):
+        missing.append('ebook-convert')
     
     # Check for Python libraries
     try:
@@ -108,6 +112,10 @@ def install_dependencies_guide(missing_dependencies):
             instructions += "PyMuPDF Library:\n"
             instructions += "- Run 'pip install PyMuPDF'\n"
 
+        elif dep == 'ebook-convert':
+            instructions += "Calibre (ebook-convert) Installation:\n"
+            instructions += "- Visit https://calibre-ebook.com/download to install Calibre\n"
+
         instructions += "\n"
     
     return instructions
@@ -141,8 +149,10 @@ def prompt_for_input_file():
             # Validate file integrity
             if file_type == 'pdf':
                 is_valid, message = validate_pdf_integrity(file_path)
-            else:  # djvu
+            elif file_type == 'djvu':
                 is_valid, message = validate_djvu_integrity(file_path)
+            else:
+                is_valid, message = True, ""
             
             if not is_valid:
                 print(f"Error with environment file: {message}")
@@ -153,7 +163,7 @@ def prompt_for_input_file():
     # If no environment file or it was invalid, prompt manually
     if not env_file_path or not os.path.exists(env_file_path):
         while True:
-            file_path = input("Enter the path to the input file (PDF or DJVU): ").strip()
+            file_path = input("Enter the path to the input file (PDF, DJVU, EPUB, or MOBI): ").strip()
             
             if not file_path:
                 print("No file path provided. Please try again.")
@@ -178,8 +188,10 @@ def prompt_for_input_file():
             # Validate file integrity
             if file_type == 'pdf':
                 is_valid, message = validate_pdf_integrity(file_path)
-            else:  # djvu
+            elif file_type == 'djvu':
                 is_valid, message = validate_djvu_integrity(file_path)
+            else:
+                is_valid, message = True, ""
             
             if not is_valid:
                 print(f"Error: {message}")
@@ -362,27 +374,45 @@ def main():
     # Create project structure
     dirs = create_project_structure(base_dir, base_name)
     
-    # Initialize workflow steps
-    workflow_steps = [
-        "Converting DJVU to PDF" if file_type == 'djvu' else "Validating PDF",
-        "Extracting PNG images from PDF",
-        "Performing OCR on images",
-        "Creating chapter files",
-        "Creating combined chapter files",
-        "Creating final ZIP archive"
-    ]
+    # Initialize workflow steps based on file type
+    if file_type == 'djvu':
+        workflow_steps = [
+            "Converting DJVU to PDF",
+            "Extracting PNG images from PDF",
+            "Performing OCR on images",
+            "Creating chapter files",
+            "Creating combined chapter files",
+            "Creating final ZIP archive"
+        ]
+    elif file_type in ['epub', 'mobi']:
+        workflow_steps = [
+            "Converting ebook to PDF",
+            "Extracting text from PDF",
+            "Creating chapter files",
+            "Creating combined chapter files",
+            "Creating final ZIP archive"
+        ]
+    else:
+        workflow_steps = [
+            "Validating PDF",
+            "Extracting PNG images from PDF",
+            "Performing OCR on images",
+            "Creating chapter files",
+            "Creating combined chapter files",
+            "Creating final ZIP archive"
+        ]
     
     # Initialize step progress tracker
     progress = StepProgress(workflow_steps).start()
     
-    # Step 1: Convert DJVU to PDF if needed
+    # Step 1: Convert to PDF if needed
     progress.start_step()
     pdf_path = input_file
-    
+
     if file_type == 'djvu':
         converter = FormatConverter()
         pdf_path = os.path.join(dirs['project'], f"{base_name}.pdf")
-        
+
         print(f"Converting DJVU to PDF: {pdf_path}")
         success, message = converter.djvu_to_pdf(input_file, pdf_path)
         
@@ -390,6 +420,17 @@ def main():
             print(f"Error: {message}")
             return 1
         
+        print(message)
+    elif file_type in ['epub', 'mobi']:
+        converter = FormatConverter()
+        pdf_path = os.path.join(dirs['project'], f"{base_name}.pdf")
+        print(f"Converting ebook to PDF: {pdf_path}")
+        success, message = converter.ebook_to_pdf(input_file, pdf_path)
+
+        if not success:
+            print(f"Error: {message}")
+            return 1
+
         print(message)
     else:
         print(f"Using existing PDF: {pdf_path}")
@@ -433,40 +474,50 @@ def main():
     # Prompt for chapter descriptions
     chapter_descriptions = prompt_for_chapter_descriptions(len(chapter_pages), chapter_titles)
     
-    # Step 2: Extract PNG images from PDF
+    # Step 2: Extract content from PDF
     progress.start_step()
-    print(f"\nExtracting PNG images from PDF to {dirs['images']}")
-    
-    success, message, image_files = extractor.extract_images_parallel(
-        pdf_path,
-        dirs['images'],
-        dpi=300,
-        format='png',
-        prefix='page',
-    )
-    
+    if file_type in ['epub', 'mobi']:
+        print(f"\nExtracting text from PDF to {dirs['text']}")
+        success, message, text_files = extractor.extract_text_per_page(
+            pdf_path,
+            dirs['text'],
+            prefix='page',
+        )
+        image_files = []
+    else:
+        print(f"\nExtracting PNG images from PDF to {dirs['images']}")
+
+        success, message, image_files = extractor.extract_images_parallel(
+            pdf_path,
+            dirs['images'],
+            dpi=300,
+            format='png',
+            prefix='page',
+        )
+
     if not success:
         print(f"Error: {message}")
         return 1
-    
+
     print(message)
     progress.end_step()
-    
-    # Step 3: Perform OCR on images
-    progress.start_step()
-    print(f"\nPerforming OCR on images to {dirs['text']}")
-    
-    ocr = OCRProcessor()
-    success, message, text_files = ocr.process_images_parallel(
-        image_files, dirs['text'], language='eng', prefix='page'
-    )
-    
-    if not success:
-        print(f"Error: {message}")
-        return 1
-    
-    print(message)
-    progress.end_step()
+
+    # Step 3: Perform OCR on images (skip for digital text)
+    if file_type not in ['epub', 'mobi']:
+        progress.start_step()
+        print(f"\nPerforming OCR on images to {dirs['text']}")
+
+        ocr = OCRProcessor()
+        success, message, text_files = ocr.process_images_parallel(
+            image_files, dirs['text'], language='eng', prefix='page'
+        )
+
+        if not success:
+            print(f"Error: {message}")
+            return 1
+
+        print(message)
+        progress.end_step()
     
     # Step 4: Create chapter files
     progress.start_step()

@@ -24,6 +24,12 @@ If you have Chocolatey installed, you can install all dependencies with administ
 2. Run the installer and ensure the tools are added to your PATH
 3. Verify installation with: `ddjvu --version`
 
+### Calibre (ebook-convert)
+
+1. Download Calibre from [Calibre website](https://calibre-ebook.com/download)
+2. Install and ensure `ebook-convert` is added to your PATH
+3. Verify installation with: `ebook-convert --version`
+
 
 ## Verifying Installation
 
@@ -32,6 +38,7 @@ After installing all dependencies, run the following commands to verify the tool
 ```bash
 tesseract --version
 ddjvu --version
+ebook-convert --version
 ```
 
 If all commands return version information or help text, the dependencies are correctly installed.

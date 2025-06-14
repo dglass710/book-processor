@@ -1,6 +1,6 @@
 # Book Processor
 
-A comprehensive Python tool to automate the workflow of converting DJVU/PDF files into organized directories with PNG and text files, then combining text files into chapters and groups optimized for LLM consumption.
+A comprehensive Python tool to automate the workflow of converting DJVU/PDF/EPUB/MOBI files into organized directories with PNG and text files, then combining text files into chapters and groups optimized for LLM consumption.
 
 ## Recent Enhancements
 
@@ -10,12 +10,14 @@ A comprehensive Python tool to automate the workflow of converting DJVU/PDF file
 - **Parallel OCR Processing**: Utilize multiple CPU cores to speed up OCR on large books
 - **Parallel PNG Extraction**: Create PNG pages faster using multiple CPU cores
 
-## Features
+-## Features
 
 - Convert DJVU files to PDF (using DjVuLibre's `ddjvu`)
+- Convert EPUB/MOBI files to PDF (using Calibre's `ebook-convert`)
 - Extract PNG images from PDF (using PyMuPDF)
 - Accelerated PNG extraction with parallel processing
 - Perform OCR on images to extract text (using tesseract)
+- Extract text directly from digital PDFs and converted EPUB/MOBI
 - Accelerated OCR with parallel processing
 - Organize text files into chapters with proper formatting
 - Group chapters into combined files optimizing for file size
@@ -29,6 +31,7 @@ A comprehensive Python tool to automate the workflow of converting DJVU/PDF file
 
 - **tesseract-ocr**: For OCR processing
 - **djvulibre**: Provides the `ddjvu` tool for DJVU to PDF conversion
+- **Calibre**: Provides the `ebook-convert` tool for EPUB/MOBI to PDF conversion
 
 ### Python Dependencies
 
@@ -73,8 +76,8 @@ python main.py
 
 The script will guide you through the following steps:
 
-1. Select an input file (PDF or DJVU)
-2. Convert DJVU to PDF if necessary
+1. Select an input file (PDF, DJVU, EPUB, or MOBI)
+2. Convert DJVU/EPUB/MOBI to PDF if necessary
 3. Open the PDF for reference
 4. Enter chapter start pages
 5. Provide chapter titles and descriptions

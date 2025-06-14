@@ -216,3 +216,32 @@ class PDFExtractor:
             tuple: (success, message, extracted_files)
         """
         return self.extract_images_parallel(pdf_path, output_dir, dpi, format, prefix)
+
+    def extract_text_per_page(self, pdf_path, output_dir, prefix='page'):
+        """Extract text from each PDF page using PyMuPDF."""
+        if not self.has_pymupdf:
+            return False, "PyMuPDF not available", []
+
+        pdf_info = self.get_pdf_info(pdf_path)
+        if pdf_info['page_count'] == 0:
+            return False, "Could not determine PDF page count", []
+
+        os.makedirs(output_dir, exist_ok=True)
+
+        doc = fitz.open(pdf_path)
+        progress = ProgressTracker(doc.page_count, "Extracting PDF text").start()
+
+        output_files = []
+        for i in range(doc.page_count):
+            page = doc.load_page(i)
+            text = page.get_text()
+            output_file = os.path.join(output_dir, f"{prefix}-{i+1:03d}.txt")
+            with open(output_file, "w", encoding="utf-8") as f:
+                f.write(text)
+            output_files.append(output_file)
+            progress.update(i + 1)
+
+        doc.close()
+        progress.finish()
+
+        return True, f"Successfully extracted text from {len(output_files)} pages", output_files
