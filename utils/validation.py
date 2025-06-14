@@ -26,8 +26,8 @@ def validate_input_file(filepath):
     _, ext = os.path.splitext(filepath)
     ext = ext.lower()
     
-    if ext not in ['.pdf', '.djvu']:
-        return False, f"Unsupported file format: {ext}. Only .pdf and .djvu are supported.", None
+    if ext not in ['.pdf', '.djvu', '.epub', '.mobi']:
+        return False, f"Unsupported file format: {ext}. Only .pdf, .djvu, .epub and .mobi are supported.", None
     
     # Remove the dot from extension
     file_type = ext[1:]
