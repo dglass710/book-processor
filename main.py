@@ -236,59 +236,71 @@ def prompt_for_page_offset():
 
 def prompt_for_chapter_pages(max_page, page_offset=0):
     """
-    Prompt the user for chapter start pages
+    Prompt the user for chapter start pages and last chapter end page
     
     Args:
         max_page: Maximum page number
         page_offset: Offset for pages with preamble/front matter
         
     Returns:
-        list: List of page numbers
+        tuple: (list of start pages, last chapter end page)
     """
     while True:
+        # If there's a page offset, explain the numbering system
         if page_offset > 0:
-            print(f"\nNote: You've set a page offset of {page_offset}.")
+            print(f"\nNote: This book uses two page numbering systems:")
+            print(f"- Book pages: 1-{max_page-page_offset}")
+            print(f"- PDF pages: {page_offset+1}-{max_page}")
             print(f"When entering page numbers, use the actual book page numbers (1-{max_page-page_offset}).")
             print(f"The system will automatically adjust them to PDF page numbers ({page_offset+1}-{max_page}).\n")
         
+        # Get chapter start pages
         page_input = input(f"Enter chapter start pages (1-{max_page-page_offset}, separated by spaces or commas): ").strip()
         
         if not page_input:
             print("No pages provided. Please try again.")
             continue
         
-        # Split input by spaces or commas
-        if ',' in page_input:
-            pages = [p.strip() for p in page_input.split(',')]
-        else:
-            pages = [p.strip() for p in page_input.split()]
-        
-        # Validate page numbers and apply offset
         try:
-            # Convert to integers first
+            # Split input by spaces and/or commas
+            pages = [p.strip() for p in page_input.replace(',', ' ').split()]
             int_pages = [int(p) for p in pages]
             
-            # Check range before applying offset
-            if any(p < 1 or p > (max_page - page_offset) for p in int_pages):
-                print(f"Error: Page numbers must be between 1 and {max_page - page_offset}.")
+            # Validate page numbers
+            if not validate_page_numbers(int_pages, 1, max_page - page_offset):
+                print(f"Invalid page numbers. Please enter numbers between 1 and {max_page-page_offset} in ascending order.")
                 continue
-                
-            # Apply offset
-            adjusted_pages = [p + page_offset for p in int_pages]
             
-            # Display chapter information with both original and adjusted page numbers
+            # Calculate PDF page numbers if there's an offset
+            adjusted_pages = [p + page_offset if page_offset > 0 else p for p in int_pages]
+            
+            # Display chapter information
             print("\nChapter Information:")
             for i, (orig_page, adj_page) in enumerate(zip(int_pages, adjusted_pages)):
                 print(f"Chapter {i+1}: Starting on book page {orig_page} (PDF page {adj_page})")
             
-            # Confirm with user
-            confirm = input("\nIs this correct? (Y/n): ").strip().lower()
-            if confirm in ['', 'y', 'yes']:
-                return adjusted_pages
+            # Confirm chapter pages
+            confirm = input("\nAre these chapter start pages correct? (y/n): ").strip().lower()
+            if confirm != 'y':
+                continue
             
-            print("Let's try again.")
+            # Get last chapter end page
+            while True:
+                last_page_input = input(f"\nEnter the last page of the final chapter (1-{max_page-page_offset}): ").strip()
+                try:
+                    last_page = int(last_page_input)
+                    if last_page <= int_pages[-1]:
+                        print("Last page must be after the start of the last chapter.")
+                        continue
+                    if not validate_page_numbers([last_page], int_pages[-1] + 1, max_page - page_offset):
+                        print(f"Invalid page number. Please enter a number between {int_pages[-1] + 1} and {max_page-page_offset}.")
+                        continue
+                    return int_pages, last_page
+                except ValueError:
+                    print("Invalid input. Please enter a number.")
+            
         except ValueError:
-            print("Error: All page numbers must be integers.")
+            print("Invalid input. Please enter numbers only.")
             continue
 
 
@@ -310,10 +322,8 @@ def prompt_for_chapter_titles(chapter_count):
     for i in range(chapter_count):
         default_title = f"Chapter {i+1}"
         title = input(f"Title for Chapter {i+1}: ").strip()
-        
         if not title:
             title = default_title
-        
         titles.append(title)
     
     return titles
@@ -330,13 +340,17 @@ def prompt_for_chapter_descriptions(chapter_count, titles):
     Returns:
         list: List of chapter descriptions
     """
-    print("\nPlease enter a brief description for each chapter (topics, subtopics).")
-    print("These will be included in the index. Press Enter to skip.\n")
+    print("\nPlease enter a brief description for each section (topics, subtopics).")
+    print("Press Enter to skip.\n")
     
     descriptions = []
     
-    for i in range(chapter_count):
-        title = titles[i]
+    # Handle all titles (including front/back matter if present)
+    for i, title in enumerate(titles):
+        if title == "Front Matter":
+            print("Description for Front Matter (e.g., 'Table of Contents, Preface, Introduction')")
+        elif title == "Back Matter":
+            print("Description for Back Matter (e.g., 'Index, Appendices, Bibliography')")
         description = input(f"Description for {title}: ").strip()
         descriptions.append(description)
     
@@ -465,9 +479,9 @@ def main():
     # Prompt for page offset (for books with preambles using Roman numerals)
     page_offset = prompt_for_page_offset()
     
-    # Prompt for chapter start pages (with offset applied)
-    chapter_pages = prompt_for_chapter_pages(pdf_info['page_count'], page_offset)
-    
+    # Prompt for chapter start pages and last chapter end page (with offset applied)
+    chapter_pages, last_chapter_end = prompt_for_chapter_pages(pdf_info['page_count'], page_offset)
+
     # Prompt for chapter titles
     chapter_titles = prompt_for_chapter_titles(len(chapter_pages))
     
@@ -525,7 +539,7 @@ def main():
     
     organizer = ChapterOrganizer()
     chapters = organizer.parse_chapter_locations(
-        chapter_pages, chapter_titles, pdf_info['page_count'], page_offset
+        chapter_pages, chapter_titles, last_chapter_end + 1, page_offset
     )
     
     # Add descriptions to chapters

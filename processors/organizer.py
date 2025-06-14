@@ -42,6 +42,19 @@ class ChapterOrganizer:
         # Sort chapter starts to ensure they're in order
         chapter_starts = sorted(chapter_starts)
         
+        # Add front matter if there's content before first chapter
+        if chapter_starts[0] > 1:
+            front_matter = {
+                'number': 0,
+                'title': "Front Matter",
+                'start_page': 1,  # PDF page number
+                'book_start_page': 1 if page_offset <= 0 else 1 - page_offset,  # Book page number
+                'end_page': chapter_starts[0] - 1,  # PDF page number
+                'book_end_page': (chapter_starts[0] - 1) - page_offset if page_offset > 0 else chapter_starts[0] - 1,
+                'page_offset': page_offset  # Store the offset
+            }
+            chapters.append(front_matter)
+        
         # Create chapter dictionaries
         for i, start_page in enumerate(chapter_starts):
             chapter_num = i + 1
@@ -66,17 +79,31 @@ class ChapterOrganizer:
                 'page_offset': page_offset  # Store the offset
             }
             
-            # Add end page for previous chapter
+            # Add end page for previous chapter if it's a regular chapter
             if i > 0:
-                chapters[i-1]['end_page'] = start_page - 1
-                chapters[i-1]['book_end_page'] = book_start_page - 1 if page_offset > 0 else start_page - 1
+                chapters[-1]['end_page'] = start_page - 1
+                chapters[-1]['book_end_page'] = book_start_page - 1 if page_offset > 0 else start_page - 1
                 
             chapters.append(chapter)
             
         # Set end page for last chapter
         if chapters and max_page:
-            chapters[-1]['end_page'] = max_page
-            chapters[-1]['book_end_page'] = max_page - page_offset if page_offset > 0 else max_page
+            last_chapter_end = max_page - 1  # Leave room for back matter
+            chapters[-1]['end_page'] = last_chapter_end
+            chapters[-1]['book_end_page'] = last_chapter_end - page_offset if page_offset > 0 else last_chapter_end
+            
+            # Add back matter if there's content after last chapter
+            if max_page > last_chapter_end:
+                back_matter = {
+                    'number': len(chapter_starts) + 1,
+                    'title': "Back Matter",
+                    'start_page': last_chapter_end + 1,  # PDF page number
+                    'book_start_page': (last_chapter_end + 1) - page_offset if page_offset > 0 else last_chapter_end + 1,
+                    'end_page': max_page,  # PDF page number
+                    'book_end_page': max_page - page_offset if page_offset > 0 else max_page,
+                    'page_offset': page_offset  # Store the offset
+                }
+                chapters.append(back_matter)
             
         return chapters
     

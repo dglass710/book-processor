@@ -35,39 +35,40 @@ def validate_input_file(filepath):
     return True, "File is valid", file_type
 
 
-def validate_page_numbers(page_numbers, max_pages):
+def validate_page_numbers(page_numbers, min_page=1, max_pages=None):
     """
     Validate that page numbers are valid integers in ascending order
     
     Args:
-        page_numbers: List of page numbers as strings
-        max_pages: Maximum page number allowed
+        page_numbers: List of page numbers as strings or integers
+        min_page: Minimum allowed page number (default: 1)
+        max_pages: Maximum page number allowed (optional)
         
     Returns:
-        tuple: (is_valid, message, parsed_numbers)
+        bool: True if valid, False if not
     """
     if not page_numbers:
-        return False, "No page numbers provided", None
+        return False
     
-    parsed_numbers = []
-    
-    for i, num in enumerate(page_numbers):
-        try:
-            page = int(num.strip())
-            if page < 1:
-                return False, f"Page number must be positive: {num}", None
-            if page > max_pages:
-                return False, f"Page number exceeds maximum ({max_pages}): {num}", None
-            parsed_numbers.append(page)
-        except ValueError:
-            return False, f"Invalid page number: {num}", None
-    
-    # Check if numbers are in ascending order
-    for i in range(1, len(parsed_numbers)):
-        if parsed_numbers[i] <= parsed_numbers[i-1]:
-            return False, f"Page numbers must be in ascending order: {parsed_numbers[i-1]} followed by {parsed_numbers[i]}", None
-    
-    return True, "Page numbers are valid", parsed_numbers
+    try:
+        # Convert to integers if they're strings
+        parsed_numbers = [int(str(num).strip()) for num in page_numbers]
+        
+        # Check range
+        for num in parsed_numbers:
+            if num < min_page:
+                return False
+            if max_pages and num > max_pages:
+                return False
+        
+        # Check if numbers are in ascending order
+        for i in range(1, len(parsed_numbers)):
+            if parsed_numbers[i] <= parsed_numbers[i-1]:
+                return False
+        
+        return True
+    except ValueError:
+        return False
 
 
 def validate_pdf_integrity(pdf_path):
