@@ -54,7 +54,9 @@ class OCRProcessor:
             instructions += "Tesseract OCR Installation:\n"
             instructions += "- Windows: Download from https://github.com/UB-Mannheim/tesseract/wiki\n"
             instructions += "- macOS: Run 'brew install tesseract'\n"
-            instructions += "- Linux (Debian/Ubuntu): Run 'sudo apt-get install tesseract-ocr'\n"
+            instructions += (
+                "- Linux (Debian/Ubuntu): Run 'sudo apt-get install tesseract-ocr'\n"
+            )
             instructions += "- Linux (Fedora): Run 'sudo dnf install tesseract'\n\n"
             instructions += "After installation, ensure tesseract is in your PATH.\n"
 
@@ -166,7 +168,9 @@ class OCRProcessor:
         except Exception as e:
             return False, f"Exception during OCR: {str(e)}"
 
-    def process_images(self, image_paths, output_dir, language="eng", config="", prefix="page"):
+    def process_images(
+        self, image_paths, output_dir, language="eng", config="", prefix="page"
+    ):
         """
         Process multiple images sequentially with OCR
 
@@ -212,7 +216,9 @@ class OCRProcessor:
             output_path = os.path.join(output_dir, output_filename)
 
             # Process the image
-            success, message = self.process_image(image_path, output_path, language, config)
+            success, message = self.process_image(
+                image_path, output_path, language, config
+            )
 
             if success:
                 processed_files.append(f"{output_path}.txt")
@@ -276,7 +282,9 @@ class OCRProcessor:
         progress = ProgressTracker(len(tasks), "Processing OCR").start()
 
         with ProcessPoolExecutor(max_workers=max_workers) as executor:
-            future_to_task = {executor.submit(_process_image_worker, t): t for t in tasks}
+            future_to_task = {
+                executor.submit(_process_image_worker, t): t for t in tasks
+            }
             for future in as_completed(future_to_task):
                 image_path, output_path, success, message = future.result()
                 if success:

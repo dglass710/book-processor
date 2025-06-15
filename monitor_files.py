@@ -11,7 +11,13 @@ from datetime import datetime
 def count_files(directory):
     """Count files in a directory"""
     try:
-        return len([f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))])
+        return len(
+            [
+                f
+                for f in os.listdir(directory)
+                if os.path.isfile(os.path.join(directory, f))
+            ]
+        )
     except Exception as e:
         return "Error: {}".format(str(e))
 

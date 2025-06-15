@@ -73,7 +73,9 @@ def main(timeout=None):
     input_str = "\n".join(responses)
 
     # Path to the setup_environment.py script
-    setup_script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "setup_environment.py")
+    setup_script = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "setup_environment.py"
+    )
 
     # Run the setup_environment.py script with the prepared input
     try:
@@ -130,7 +132,11 @@ def main(timeout=None):
 
         while process.poll() is None:
             if timeout is not None and time.time() - start_time > timeout:
-                print("Error: Process timed out after {} seconds. Terminating...".format(timeout))
+                print(
+                    "Error: Process timed out after {} seconds. Terminating...".format(
+                        timeout
+                    )
+                )
                 process.terminate()
                 time.sleep(1)
                 if process.poll() is None:

@@ -82,7 +82,9 @@ def create_project_structure(base_dir, book_name):
         counter += 1
 
     # Now create the unique directory
-    os.makedirs(project_dir, exist_ok=False)  # Use False here since we know it doesn't exist
+    os.makedirs(
+        project_dir, exist_ok=False
+    )  # Use False here since we know it doesn't exist
     print(f"Creating project directory: {project_dir}")
 
     # Create subdirectories

@@ -35,7 +35,9 @@ class FormatConverter:
             instructions += "DjVuLibre Installation (provides ddjvu):\n"
             instructions += "- Windows: https://sourceforge.net/projects/djvu/files/\n"
             instructions += "- macOS: Run 'brew install djvulibre'\n"
-            instructions += "- Linux (Debian/Ubuntu): Run 'sudo apt-get install djvulibre-bin'\n"
+            instructions += (
+                "- Linux (Debian/Ubuntu): Run 'sudo apt-get install djvulibre-bin'\n"
+            )
             instructions += "- Linux (Fedora): Run 'sudo dnf install djvulibre'\n\n"
         if not self.has_ebook_convert:
             instructions += "Calibre Installation (provides ebook-convert):\n"
@@ -52,7 +54,9 @@ class FormatConverter:
 
         try:
             cmd = ["ebook-convert", ebook_path, output_pdf_path]
-            result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            result = subprocess.run(
+                cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+            )
             if result.returncode != 0:
                 return False, f"ebook-convert failed: {result.stderr.strip()}"
 
@@ -76,7 +80,9 @@ class FormatConverter:
                 djvu_path,
                 output_pdf_path,
             ]
-            result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            result = subprocess.run(
+                cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+            )
             if result.returncode != 0:
                 return False, f"ddjvu failed: {result.stderr.strip()}"
 

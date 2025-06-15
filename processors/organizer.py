@@ -3,10 +3,9 @@ Organizer module for organizing text files into chapters and combined chapters
 """
 
 import os
-import re
 import sys
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple
+from typing import Optional, Tuple
 
 from utils.progress import ProgressTracker
 
@@ -22,7 +21,9 @@ class ChapterOrganizer:
     def __init__(self):
         pass
 
-    def parse_chapter_locations(self, chapter_starts, chapter_titles=None, max_page=None, page_offset=0):
+    def parse_chapter_locations(
+        self, chapter_starts, chapter_titles=None, max_page=None, page_offset=0
+    ):
         """
         Parse chapter start pages and create chapter information
 
@@ -49,9 +50,15 @@ class ChapterOrganizer:
                 "number": 0,
                 "title": "Front Matter",
                 "start_page": 1,  # PDF page number
-                "book_start_page": (1 if page_offset <= 0 else 1 - page_offset),  # Book page number
+                "book_start_page": (
+                    1 if page_offset <= 0 else 1 - page_offset
+                ),  # Book page number
                 "end_page": chapter_starts[0] - 1,  # PDF page number
-                "book_end_page": ((chapter_starts[0] - 1) - page_offset if page_offset > 0 else chapter_starts[0] - 1),
+                "book_end_page": (
+                    (chapter_starts[0] - 1) - page_offset
+                    if page_offset > 0
+                    else chapter_starts[0] - 1
+                ),
                 "page_offset": page_offset,  # Store the offset
             }
             chapters.append(front_matter)
@@ -61,7 +68,9 @@ class ChapterOrganizer:
             chapter_num = i + 1
 
             # Calculate book page numbers
-            book_start_page = start_page - page_offset if page_offset > 0 else start_page
+            book_start_page = (
+                start_page - page_offset if page_offset > 0 else start_page
+            )
 
             # Set title
             title = f"Chapter {chapter_num}"
@@ -83,7 +92,9 @@ class ChapterOrganizer:
             # Add end page for previous chapter if it's a regular chapter
             if i > 0:
                 chapters[-1]["end_page"] = start_page - 1
-                chapters[-1]["book_end_page"] = book_start_page - 1 if page_offset > 0 else start_page - 1
+                chapters[-1]["book_end_page"] = (
+                    book_start_page - 1 if page_offset > 0 else start_page - 1
+                )
 
             chapters.append(chapter)
 
@@ -91,7 +102,9 @@ class ChapterOrganizer:
         if chapters and max_page:
             last_chapter_end = max_page - 1  # Leave room for back matter
             chapters[-1]["end_page"] = last_chapter_end
-            chapters[-1]["book_end_page"] = last_chapter_end - page_offset if page_offset > 0 else last_chapter_end
+            chapters[-1]["book_end_page"] = (
+                last_chapter_end - page_offset if page_offset > 0 else last_chapter_end
+            )
 
             # Add back matter if there's content after last chapter
             if max_page > last_chapter_end:
@@ -99,9 +112,15 @@ class ChapterOrganizer:
                     "number": len(chapter_starts) + 1,
                     "title": "Back Matter",
                     "start_page": last_chapter_end + 1,  # PDF page number
-                    "book_start_page": ((last_chapter_end + 1) - page_offset if page_offset > 0 else last_chapter_end + 1),
+                    "book_start_page": (
+                        (last_chapter_end + 1) - page_offset
+                        if page_offset > 0
+                        else last_chapter_end + 1
+                    ),
                     "end_page": max_page,  # PDF page number
-                    "book_end_page": (max_page - page_offset if page_offset > 0 else max_page),
+                    "book_end_page": (
+                        max_page - page_offset if page_offset > 0 else max_page
+                    ),
                     "page_offset": page_offset,  # Store the offset
                 }
                 chapters.append(back_matter)
@@ -146,7 +165,9 @@ class ChapterOrganizer:
 
                 # Display page numbers - show both book pages and PDF pages if there's an offset
                 if page_offset > 0:
-                    outfile.write(f"Book Pages {book_start_page}-{book_end_page} (PDF Pages {start_page}-{end_page})\n")
+                    outfile.write(
+                        f"Book Pages {book_start_page}-{book_end_page} (PDF Pages {start_page}-{end_page})\n"
+                    )
                 else:
                     outfile.write(f"Pages {start_page}-{end_page}\n")
 
@@ -163,7 +184,9 @@ class ChapterOrganizer:
                         book_page_num = page_num - page_offset
                         # Write page header with both numbering systems
                         outfile.write("\n" + "=" * 40 + "\n")
-                        outfile.write(f"[BEGIN PAGE {page_num} (Book Page {book_page_num})]\n")
+                        outfile.write(
+                            f"[BEGIN PAGE {page_num} (Book Page {book_page_num})]\n"
+                        )
                         outfile.write("=" * 40 + "\n\n")
                     else:
                         # Write page header with just PDF page number
@@ -187,13 +210,17 @@ class ChapterOrganizer:
                                 outfile.write(content)
                                 char_count += len(content)
                         except Exception:
-                            outfile.write(f"[WARNING: Page {page_num} content could not be decoded]\n")
+                            outfile.write(
+                                f"[WARNING: Page {page_num} content could not be decoded]\n"
+                            )
 
                     # Write page footer
                     outfile.write("\n\n" + "=" * 40 + "\n")
                     if page_offset > 0:
                         book_page_num = page_num - page_offset
-                        outfile.write(f"[END PAGE {page_num} (Book Page {book_page_num})]\n")
+                        outfile.write(
+                            f"[END PAGE {page_num} (Book Page {book_page_num})]\n"
+                        )
                     else:
                         outfile.write(f"[END PAGE {page_num}]\n")
                     outfile.write("=" * 40 + "\n")
@@ -231,7 +258,9 @@ class ChapterOrganizer:
 
         for i, chapter in enumerate(chapters):
             # Process chapter
-            success, message, output_path, char_count = self.process_chapter(chapter, text_dir, output_dir)
+            success, message, output_path, char_count = self.process_chapter(
+                chapter, text_dir, output_dir
+            )
 
             if success:
                 # Add character count to chapter info
@@ -309,7 +338,11 @@ class CombinedChapterOrganizer:
         for ch in chapters:
             # If adding this chapter would exceed target size and we already have chapters in the group
             # and we haven't reached the maximum number of groups yet
-            if current_size + ch["char_count"] > target_size * 1.5 and current_group and len(groups) < self.max_combined_files - 1:
+            if (
+                current_size + ch["char_count"] > target_size * 1.5
+                and current_group
+                and len(groups) < self.max_combined_files - 1
+            ):
 
                 # Save current group and start a new one
                 if current_group:
@@ -334,7 +367,9 @@ class CombinedChapterOrganizer:
             else:
                 desc = f"Chapters {group[0]}–{group[-1]}"
 
-            formatted_groups.append({"file": f"{i+1:02d}", "chapters": group, "desc": desc})
+            formatted_groups.append(
+                {"file": f"{i+1:02d}", "chapters": group, "desc": desc}
+            )
 
         return formatted_groups
 
@@ -378,8 +413,12 @@ class CombinedChapterOrganizer:
 
             if has_offset:
                 # Calculate book page range
-                book_start_page = min(ch.get("book_start_page", ch["start_page"]) for ch in group_chapters)
-                book_end_page = max(ch.get("book_end_page", ch["end_page"]) for ch in group_chapters)
+                book_start_page = min(
+                    ch.get("book_start_page", ch["start_page"]) for ch in group_chapters
+                )
+                book_end_page = max(
+                    ch.get("book_end_page", ch["end_page"]) for ch in group_chapters
+                )
 
                 # Open output file
                 with open(output_path, "w", encoding="utf-8") as outfile:
@@ -400,21 +439,29 @@ class CombinedChapterOrganizer:
                                 outfile.write(content)
                                 outfile.write("\n\n")
                         except FileNotFoundError:
-                            outfile.write(f"[WARNING: Chapter {chapter_num} content not found]\n\n")
+                            outfile.write(
+                                f"[WARNING: Chapter {chapter_num} content not found]\n\n"
+                            )
                         except UnicodeDecodeError:
                             # Try with different encoding if UTF-8 fails
                             try:
-                                with open(chapter_path, "r", encoding="latin-1") as infile:
+                                with open(
+                                    chapter_path, "r", encoding="latin-1"
+                                ) as infile:
                                     content = infile.read()
                                     outfile.write(content)
                                     outfile.write("\n\n")
                             except Exception:
-                                outfile.write(f"[WARNING: Chapter {chapter_num} content could not be decoded]\n\n")
+                                outfile.write(
+                                    f"[WARNING: Chapter {chapter_num} content could not be decoded]\n\n"
+                                )
             else:
                 # Open output file
                 with open(output_path, "w", encoding="utf-8") as outfile:
                     # Write combined file header with just PDF page numbers
-                    outfile.write(f"{output_filename} - {description} (Pages {start_page}-{end_page})\n\n")
+                    outfile.write(
+                        f"{output_filename} - {description} (Pages {start_page}-{end_page})\n\n"
+                    )
 
                     # Process each chapter
                     for chapter in group_chapters:
@@ -428,16 +475,22 @@ class CombinedChapterOrganizer:
                                 outfile.write(content)
                                 outfile.write("\n\n")
                         except FileNotFoundError:
-                            outfile.write(f"[WARNING: Chapter {chapter_num} content not found]\n\n")
+                            outfile.write(
+                                f"[WARNING: Chapter {chapter_num} content not found]\n\n"
+                            )
                         except UnicodeDecodeError:
                             # Try with different encoding if UTF-8 fails
                             try:
-                                with open(chapter_path, "r", encoding="latin-1") as infile:
+                                with open(
+                                    chapter_path, "r", encoding="latin-1"
+                                ) as infile:
                                     content = infile.read()
                                     outfile.write(content)
                                     outfile.write("\n\n")
                             except Exception:
-                                outfile.write(f"[WARNING: Chapter {chapter_num} content could not be decoded]\n\n")
+                                outfile.write(
+                                    f"[WARNING: Chapter {chapter_num} content could not be decoded]\n\n"
+                                )
 
             return (
                 True,
@@ -476,7 +529,9 @@ class CombinedChapterOrganizer:
 
         for i, group in enumerate(groups):
             # Create combined file
-            success, message, output_path = self.create_combined_file(group, chapters, chapters_dir, output_dir)
+            success, message, output_path = self.create_combined_file(
+                group, chapters, chapters_dir, output_dir
+            )
 
             if success:
                 output_files.append((group, output_path))
@@ -534,7 +589,9 @@ class CombinedChapterOrganizer:
                 else:
                     outfile.write("Combined Chapter Files Index\n")
 
-                outfile.write(f"Last Updated: {datetime.now().strftime('%Y-%m-%d')}\n\n")
+                outfile.write(
+                    f"Last Updated: {datetime.now().strftime('%Y-%m-%d')}\n\n"
+                )
 
                 # Process each group
                 for group in groups:
@@ -543,7 +600,9 @@ class CombinedChapterOrganizer:
                     description = group["desc"]
 
                     # Get chapters in this group
-                    group_chapters = [ch for ch in chapters if ch["number"] in chapter_numbers]
+                    group_chapters = [
+                        ch for ch in chapters if ch["number"] in chapter_numbers
+                    ]
 
                     # Calculate page range (PDF page numbers)
                     if group_chapters:
@@ -551,12 +610,20 @@ class CombinedChapterOrganizer:
                         end_page = max(ch["end_page"] for ch in group_chapters)
 
                         # Check if we have book page numbers (with offset)
-                        has_offset = any(ch.get("page_offset", 0) > 0 for ch in group_chapters)
+                        has_offset = any(
+                            ch.get("page_offset", 0) > 0 for ch in group_chapters
+                        )
 
                         if has_offset:
                             # Calculate book page range
-                            book_start_page = min(ch.get("book_start_page", ch["start_page"]) for ch in group_chapters)
-                            book_end_page = max(ch.get("book_end_page", ch["end_page"]) for ch in group_chapters)
+                            book_start_page = min(
+                                ch.get("book_start_page", ch["start_page"])
+                                for ch in group_chapters
+                            )
+                            book_end_page = max(
+                                ch.get("book_end_page", ch["end_page"])
+                                for ch in group_chapters
+                            )
 
                             # Write group header with both page numbering systems
                             outfile.write(
@@ -568,10 +635,14 @@ class CombinedChapterOrganizer:
                             )
                         else:
                             # Write group header with just PDF page numbers
-                            outfile.write(f"combined_{file_num}.txt - {description} (Pages {start_page}-{end_page})\n")
+                            outfile.write(
+                                f"combined_{file_num}.txt - {description} (Pages {start_page}-{end_page})\n"
+                            )
 
                         # Write chapter details
-                        for chapter in sorted(group_chapters, key=lambda x: x["number"]):
+                        for chapter in sorted(
+                            group_chapters, key=lambda x: x["number"]
+                        ):
                             _ = chapter["number"]  # Skip chapter number
                             chapter_title = chapter["title"]
                             chapter_start = chapter["start_page"]  # PDF page number
@@ -579,7 +650,9 @@ class CombinedChapterOrganizer:
 
                             # Get book page numbers if available
                             page_offset = chapter.get("page_offset", 0)
-                            book_start_page = chapter.get("book_start_page", chapter_start)
+                            book_start_page = chapter.get(
+                                "book_start_page", chapter_start
+                            )
                             book_end_page = chapter.get("book_end_page", chapter_end)
 
                             # Display page numbers - show both book pages and PDF pages if there's an offset
@@ -588,7 +661,9 @@ class CombinedChapterOrganizer:
                                     f"    {chapter_title} (Book p.{book_start_page}-{book_end_page}, PDF p.{chapter_start}-{chapter_end})\n"
                                 )
                             else:
-                                outfile.write(f"    {chapter_title} (p.{chapter_start}-{chapter_end})\n")
+                                outfile.write(
+                                    f"    {chapter_title} (p.{chapter_start}-{chapter_end})\n"
+                                )
 
                             # If chapter has a description, add it
                             if "description" in chapter and chapter["description"]:
@@ -642,10 +717,12 @@ class CombinedChapterOrganizer:
                 )
 
                 # Write workflow steps
-                outfile.write("You must follow this non-negotiable, three-step workflow for every query:\n\n")
                 outfile.write(
-                    '1. **READ index.txt FIRST**: Immediately open index.txt to identify the correct chapter(s) '
-                    '(and their combined file if needed) for the user\'s query using keywords, chapter titles, '
+                    "You must follow this non-negotiable, three-step workflow for every query:\n\n"
+                )
+                outfile.write(
+                    "1. **READ index.txt FIRST**: Immediately open index.txt to identify the correct chapter(s) "
+                    "(and their combined file if needed) for the user's query using keywords, chapter titles, "
                     'or subtopics. Never search other files without this mapping. Example: "budget planning" → '
                     'Chapter 8 → combined_02.txt; "marketing" → Chapter 11 → combined_03.txt.\n'
                 )
@@ -657,37 +734,45 @@ class CombinedChapterOrganizer:
                 # Write citation format instructions based on page offset
                 if has_page_offset:
                     outfile.write(
-                        '3. **RESPOND WITH PRECISE DUAL-FORMAT CITATIONS**: Quote or paraphrase only from the relevant '
-                        'chapter(s), citing the chapter and the narrowest possible page range that directly covers '
-                        'the topic. You MUST include BOTH page numbering systems in every citation '
+                        "3. **RESPOND WITH PRECISE DUAL-FORMAT CITATIONS**: Quote or paraphrase only from the relevant "
+                        "chapter(s), citing the chapter and the narrowest possible page range that directly covers "
+                        "the topic. You MUST include BOTH page numbering systems in every citation "
                         '(e.g., "Source: Chapter 8, Book Pages 75-77, PDF Pages 85-87"). '
-                        'Broad or generic page citations are not acceptable.\n\n'
+                        "Broad or generic page citations are not acceptable.\n\n"
                     )
                 else:
                     outfile.write(
-                        '3. **RESPOND WITH PRECISE CITATIONS**: Quote or paraphrase only from the relevant chapter(s), '
-                        'citing the chapter and the narrowest possible page range that directly covers the topic '
+                        "3. **RESPOND WITH PRECISE CITATIONS**: Quote or paraphrase only from the relevant chapter(s), "
+                        "citing the chapter and the narrowest possible page range that directly covers the topic "
                         '(e.g., "Source: Chapter 8, Pages 85–87"). Broad or generic page citations are not acceptable.\n\n'
                     )
 
                 # Write diagnostic output requirement
                 outfile.write(
-                    '**Diagnostic Output Requirement:** Every response must include the statement: '
+                    "**Diagnostic Output Requirement:** Every response must include the statement: "
                     '"Index consulted: [list of chapter(s) identified, e.g., Chapter 8]."\n\n'
                 )
 
                 # Write what not to do
                 outfile.write("**What You Must Not Do:**\n")
-                outfile.write("- Do NOT use external information or make assumptions not present in the files.\n")
-                outfile.write("- Do NOT reference visuals or diagrams, as this is a text-only source.\n")
-                outfile.write("- Do NOT cite incorrect chapters (e.g., citing Chapter 10 for marketing).\n")
+                outfile.write(
+                    "- Do NOT use external information or make assumptions not present in the files.\n"
+                )
+                outfile.write(
+                    "- Do NOT reference visuals or diagrams, as this is a text-only source.\n"
+                )
+                outfile.write(
+                    "- Do NOT cite incorrect chapters (e.g., citing Chapter 10 for marketing).\n"
+                )
                 # Different citation warning based on whether there's a page offset
                 if has_page_offset:
                     outfile.write(
                         "- Do NOT use overly broad citations (e.g., Book Pages 75-98, PDF Pages 85-108). "
                         "Use only the minimal span of pages necessary.\n"
                     )
-                    outfile.write("- Do NOT omit either page numbering system in citations. ALWAYS include both Book Pages and PDF Pages.\n\n")
+                    outfile.write(
+                        "- Do NOT omit either page numbering system in citations. ALWAYS include both Book Pages and PDF Pages.\n\n"
+                    )
                 else:
                     outfile.write(
                         "- Do NOT use overly broad citations (e.g., Pages 75-98). "
@@ -698,8 +783,12 @@ class CombinedChapterOrganizer:
                 outfile.write("**Tasks Supported:**\n")
                 outfile.write("- Answer questions with pinpoint accuracy.\n")
                 outfile.write("- Summarize chapters or topics clearly.\n")
-                outfile.write("- Create flashcards or multiple-choice quizzes with source citations.\n")
-                outfile.write("- Explain techniques or concepts using clear language from the text.\n")
+                outfile.write(
+                    "- Create flashcards or multiple-choice quizzes with source citations.\n"
+                )
+                outfile.write(
+                    "- Explain techniques or concepts using clear language from the text.\n"
+                )
                 outfile.write(
                     f'- If a topic is not found in the {num_chapters} chapters, state: "This information is not covered in {book_title}."\n\n'
                 )
@@ -707,35 +796,39 @@ class CombinedChapterOrganizer:
                 # Write document structure reminder
                 outfile.write("**Document Structure Reminder:**\n")
                 outfile.write("- File headers show chapter ranges.\n")
-                outfile.write("- Chapter markers specify chapter number, title, and page range.\n")
+                outfile.write(
+                    "- Chapter markers specify chapter number, title, and page range.\n"
+                )
                 # Add information about page numbering systems if there's a page offset
                 if has_page_offset:
                     outfile.write(
-                        "- This book uses two page numbering systems: Book Pages (as printed in the book) and PDF Pages (as shown in the PDF file).\n"
+                        "- This book uses two page numbering systems: Book Pages (printed) and PDF Pages (file).\n"
                     )
                     outfile.write(
-                        "- Page markers in the text show both systems: [BEGIN PAGE 25 (Book Page 15)] means PDF page 25, which is page 15 in the book.\n"
+                        "- Page markers show: [BEGIN PAGE 25 (Book Page 15)] means PDF page 25 is page 15.\n"
                     )
                     outfile.write(
-                        "- When citing pages, you MUST ALWAYS include both numbering systems for clarity "
-                        "(e.g., 'Book Pages 15-20, PDF Pages 25-30'). This is a strict requirement for all citations.\n"
+                        "- When citing pages, you MUST ALWAYS include both numbering systems "
+                        "(e.g., 'Book Pages 15-20, PDF Pages 25-30'). This is required.\n"
                     )
-                    outfile.write("- Pages are clearly marked: [BEGIN PAGE X (Book Page Y)] / [END PAGE X (Book Page Y)].\n\n")
+                    outfile.write(
+                        "- Pages are clearly marked: [BEGIN PAGE X (Book Page Y)] / [END PAGE X (Book Page Y)].\n\n"
+                    )
                 else:
-                    outfile.write("- Pages are clearly marked: [BEGIN PAGE X] / [END PAGE X].\n\n")
+                    outfile.write(
+                        "- Pages are clearly marked: [BEGIN PAGE X] / [END PAGE X].\n\n"
+                    )
 
                 # Write mission statement
                 if has_page_offset:
                     outfile.write(
-                        f"Your mission is to deliver fully accurate, strictly sourced, index-confirmed responses "
-                        f"from *{book_title}*. Always use the narrowest page range directly covering the topic "
-                        f"and include both Book Pages and PDF Pages in every citation."
+                        f"Your mission is to deliver accurate, sourced responses from *{book_title}*. "
+                        f"Use narrow page ranges and include both Book Pages and PDF Pages in citations."
                     )
                 else:
                     outfile.write(
-                        f"Your mission is to deliver fully accurate, strictly sourced, index-confirmed responses "
-                        f"from *{book_title}*. Always use the narrowest page range directly covering the topic "
-                        f"in every citation."
+                        f"Your mission is to deliver accurate, sourced responses from *{book_title}*. "
+                        f"Use narrow page ranges in citations."
                     )
 
                 return True, "Successfully created instructions file", instructions_path

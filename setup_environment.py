@@ -27,7 +27,9 @@ def check_dependency(name, command):
                     timeout=5,
                 )
                 if result.returncode == 0:
-                    print(f"[OK] {name} is available: {result.stdout.strip() or result.stderr.strip()}")
+                    print(
+                        f"[OK] {name} is available: {result.stdout.strip() or result.stderr.strip()}"
+                    )
                     return True
             except (subprocess.TimeoutExpired, subprocess.SubprocessError):
                 continue
@@ -69,14 +71,18 @@ def main():
     for tesseract_path in tesseract_paths:
         if os.path.exists(tesseract_path):
             print(f"Found Tesseract at {tesseract_path}")
-            os.environ["PATH"] = tesseract_path + os.pathsep + os.environ.get("PATH", "")
+            os.environ["PATH"] = (
+                tesseract_path + os.pathsep + os.environ.get("PATH", "")
+            )
             print("Added Tesseract to PATH")
             tesseract_found = True
             break
 
     if not tesseract_found:
         print("Tesseract not found in standard locations")
-        print("Please install Tesseract from https://github.com/UB-Mannheim/tesseract/wiki")
+        print(
+            "Please install Tesseract from https://github.com/UB-Mannheim/tesseract/wiki"
+        )
 
     # Find and add DjVuLibre to PATH
     djvulibre_paths = [
@@ -94,7 +100,9 @@ def main():
 
     if not djvulibre_found:
         print("DjVuLibre not found in standard locations")
-        print("Please install DjVuLibre from https://sourceforge.net/projects/djvu/files/DjVuLibre_Windows/")
+        print(
+            "Please install DjVuLibre from https://sourceforge.net/projects/djvu/files/DjVuLibre_Windows/"
+        )
 
     # Verify dependencies
     print("\nVerifying dependencies:")
@@ -116,7 +124,9 @@ def main():
         print("Would you like to continue anyway? (y/N)")
         response = input().strip().lower()
         if response != "y":
-            print("Exiting setup. Please install the missing dependencies and try again.")
+            print(
+                "Exiting setup. Please install the missing dependencies and try again."
+            )
             return 1
 
     # Run the book processor

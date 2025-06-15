@@ -60,7 +60,9 @@ class ProgressTracker:
         """Mark the operation as complete"""
         self.current = self.total
         self._display_progress(force_newline=True)
-        print(f"\n{self.description} completed in {self._format_time(time.time() - float(self.start_time) if self.start_time is not None else 0.0)}")
+        print(
+            f"\n{self.description} completed in {self._format_time(time.time() - float(self.start_time) if self.start_time is not None else 0.0)}"
+        )
 
     def _display_progress(self, force_newline=False):
         """Display the progress bar and stats"""
@@ -180,8 +182,14 @@ class StepProgress:
                 step_num = i + 1
                 if step_num in self.step_durations:
                     duration = self.step_durations[step_num]
-                    percent = (duration / total_duration) * 100 if total_duration and total_duration > 0 else 0
-                    print(f"Step {step_num}: {step} - {self._format_time(duration)} ({percent:.1f}%)")
+                    percent = (
+                        (duration / total_duration) * 100
+                        if total_duration and total_duration > 0
+                        else 0
+                    )
+                    print(
+                        f"Step {step_num}: {step} - {self._format_time(duration)} ({percent:.1f}%)"
+                    )
                 else:
                     print(f"Step {step_num}: {step} - Not completed")
 
