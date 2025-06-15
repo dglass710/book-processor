@@ -8,16 +8,20 @@ Use `CODE_REFERENCE.md` to familiarize yourself with the repository's modules, c
 - Keep imports clean and sorted.
 - Do not commit generated assets such as images, text output, or zip archives.
 
-## Style and checks
-Before committing, run the test suite from the repository root and fix any issues it reports:
+## Testing and Code Quality
+Before committing any changes, it is **mandatory** to run our comprehensive testing suite from the repository root:
 
 ```bash
 python run_tests.py
 ```
 
-This will run all code quality checks (isort, black, flake8, pyright) and unit tests.
+This unified testing script performs:
+- **Code Formatting**: Runs `isort` and `black` to ensure consistent code style
+- **Linting**: Executes `flake8` to catch common programming errors
+- **Type Checking**: Uses `pyright` for static type analysis
+- **Unit Tests**: Runs all `pytest` tests in the `tests/` directory
 
-If tests are added under a `tests/` directory, run `pytest` as well.
+All checks must pass before committing changes. The script will provide detailed feedback for any issues found.
 
 ## Documentation
 Update `README.md` or other documentation when you introduce user facing changes or new scripts.
