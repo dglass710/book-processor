@@ -63,7 +63,7 @@ A comprehensive Python tool to automate the workflow of converting DJVU/PDF/EPUB
 
 2. Install Python dependencies:
    ```bash
-   pip install PyPDF2 PyMuPDF
+   pip install PyPDF2 PyMuPDF pytest
    ```
 
 ## Usage
@@ -100,6 +100,14 @@ The script creates the following directory structure:
 │   ├── index.txt     # Index of combined files
 │   └── instructions.txt  # Instructions for LLM
 └── [book_name]_combined.zip  # ZIP archive of combined files
+```
+
+## Running Tests
+
+After installing the development tools (which include `pytest`), run the unit tests with:
+
+```bash
+pytest
 ```
 
 ## LLM Integration

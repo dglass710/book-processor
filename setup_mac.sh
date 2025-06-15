@@ -11,4 +11,4 @@ brew install tesseract djvulibre calibre
 pip3 install PyMuPDF>=1.21.1 Pillow>=9.5.0 PyPDF2>=3.0.0
 
 # Install development tools
-pip3 install pyright flake8 black isort
+pip3 install pyright flake8 black isort pytest
