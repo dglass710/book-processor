@@ -2,17 +2,20 @@
 Extractor module for converting PDF pages to images
 """
 
+# isort: skip_file
 import os
 import sys
-from concurrent.futures import ProcessPoolExecutor, as_completed
-from typing import Optional, Tuple
-
-import fitz  # PyMuPDF
-import PyPDF2
-from utils.progress import ProgressTracker
 
 # Add parent directory to path to allow imports
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+# These imports must come after sys.path modification
+from concurrent.futures import ProcessPoolExecutor, as_completed  # noqa: E402
+from typing import Optional, Tuple  # noqa: E402
+
+import PyPDF2  # noqa: E402
+import fitz  # PyMuPDF  # noqa: E402
+from utils.progress import ProgressTracker  # noqa: E402
 
 
 def _extract_page_worker(args) -> Tuple[int, Optional[str], bool, str]:
@@ -93,7 +96,9 @@ class PDFExtractor:
         except Exception as e:
             return {"page_count": 0, "title": None, "author": None, "error": str(e)}
 
-    def extract_images_with_pymupdf(self, pdf_path, output_dir, dpi=300, format="png", prefix="page"):
+    def extract_images_with_pymupdf(
+        self, pdf_path, output_dir, dpi=300, format="png", prefix="page"
+    ):
         """Extract images from PDF using PyMuPDF"""
         if not self.has_pymupdf:
             return False, "PyMuPDF not available", []
@@ -105,7 +110,9 @@ class PDFExtractor:
 
             os.makedirs(output_dir, exist_ok=True)
 
-            progress = ProgressTracker(pdf_info["page_count"], "Extracting PDF pages").start()
+            progress = ProgressTracker(
+                pdf_info["page_count"], "Extracting PDF pages"
+            ).start()
 
             extracted_files = []
             doc: fitz.Document = fitz.open(pdf_path)
@@ -176,7 +183,9 @@ class PDFExtractor:
         completed = len(extracted_files)
         if tasks:
             with ProcessPoolExecutor(max_workers=max_workers) as executor:
-                future_to_task = {executor.submit(_extract_page_worker, t): t for t in tasks}
+                future_to_task = {
+                    executor.submit(_extract_page_worker, t): t for t in tasks
+                }
                 for future in as_completed(future_to_task):
                     page_num, output_file, success, error = future.result()
                     completed += 1
@@ -204,7 +213,9 @@ class PDFExtractor:
             extracted_files,
         )
 
-    def extract_images(self, pdf_path, output_dir, dpi=300, format="png", prefix="page"):
+    def extract_images(
+        self, pdf_path, output_dir, dpi=300, format="png", prefix="page"
+    ):
         """
         Extract images from PDF using the best available method
 
