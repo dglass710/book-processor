@@ -1,39 +1,54 @@
 # Installation Guide for Book Processor
 
-This guide provides instructions for installing the required dependencies for the Book Processor tool.
+Follow these steps to install the external tools and Python packages required to run the Book Processor. Helper scripts are provided for each platform.
 
-## Method 1: Using Chocolatey (Recommended for Windows)
+## Windows
 
-If you have Chocolatey installed, you can install all dependencies with administrator privileges:
+1. Install [Chocolatey](https://chocolatey.org/) if it's not already available.
+2. Right-click `install_dependencies.bat` and choose **Run as administrator** to install Tesseract, DjVuLibre and Calibre.
+3. Restart your command prompt so the updated `PATH` is used.
 
-1. Right-click on `install_dependencies.bat` and select "Run as administrator"
-2. Follow the prompts to install all dependencies
-3. Restart your command prompt to ensure PATH is updated
+You can also install the tools manually from their websites:
 
-## Method 2: Manual Installation
+- **Tesseract OCR** – [UB-Mannheim Tesseract](https://github.com/UB-Mannheim/tesseract/wiki)
+- **DjVuLibre** – [SourceForge page](https://sourceforge.net/projects/djvu/)
+- **Calibre (ebook-convert)** – [Calibre download](https://calibre-ebook.com/download)
 
-### Tesseract OCR
+## macOS
 
-1. Download the installer from [UB-Mannheim Tesseract](https://github.com/UB-Mannheim/tesseract/wiki)
-2. Run the installer and make sure to check "Add to PATH" during installation
-3. Verify installation by opening a new command prompt and typing: `tesseract --version`
+Run the included script to install the dependencies with Homebrew:
 
-### DjVuLibre (ddjvu)
+```bash
+./setup_mac.sh
+```
 
-1. Download the installer from [DjVuLibre SourceForge](https://sourceforge.net/projects/djvu/)
-2. Run the installer and ensure the tools are added to your PATH
-3. Verify installation with: `ddjvu --version`
+## Linux
 
-### Calibre (ebook-convert)
+For Debian/Ubuntu systems run:
 
-1. Download Calibre from [Calibre website](https://calibre-ebook.com/download)
-2. Install and ensure `ebook-convert` is added to your PATH
-3. Verify installation with: `ebook-convert --version`
+```bash
+sudo ./setup_linux.sh
+```
 
+For Fedora based systems run:
 
-## Verifying Installation
+```bash
+sudo ./setup_fedora.sh
+```
 
-After installing all dependencies, run the following commands to verify the tools are installed:
+## Python Packages
+
+Install the Python requirements with:
+
+```bash
+pip install -r requirements.txt
+```
+
+The setup scripts also install the development tools used by `run_tests.py` (pyright, flake8, black, isort and pytest).
+
+## Verifying the Installation
+
+Check that the external commands are available:
 
 ```bash
 tesseract --version
@@ -41,20 +56,16 @@ ddjvu --version
 ebook-convert --version
 ```
 
-If all commands return version information or help text, the dependencies are correctly installed.
-
-## Python Dependencies
-
-The Book Processor also requires Python dependencies. Install them with:
+Then run the test suite to ensure everything works:
 
 ```bash
-pip install PyPDF2 PyMuPDF
+python run_tests.py
 ```
+
+All checks should pass without errors.
 
 ## Troubleshooting
 
-If you encounter issues with the dependencies:
-
-1. **Command not found**: Make sure the installation directories are in your PATH
-2. **Permission denied**: Run the commands with administrator privileges
-3. **Missing DLLs**: Reinstall the dependencies and make sure all required files are present
+- **Command not found** – confirm the installation directories are in your `PATH`.
+- **Permission denied** – run the commands with administrator/root privileges.
+- **Missing libraries** – reinstall the dependencies to make sure all files are present.
