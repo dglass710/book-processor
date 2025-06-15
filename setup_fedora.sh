@@ -12,4 +12,4 @@ dnf install -y tesseract djvulibre calibre python3 python3-pip
 pip install PyMuPDF>=1.21.1 Pillow>=9.5.0 PyPDF2>=3.0.0
 
 # Install development tools
-pip install pyright flake8 black isort
+pip install pyright flake8 black isort pytest
