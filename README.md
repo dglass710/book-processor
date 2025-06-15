@@ -63,8 +63,22 @@ A comprehensive Python tool to automate the workflow of converting DJVU/PDF/EPUB
 
 2. Install Python dependencies:
    ```bash
-   pip install PyPDF2 PyMuPDF pytest
+   pip install PyPDF2 PyMuPDF pytest black isort flake8 pyright
    ```
+
+## Testing
+
+To run all tests and code quality checks:
+
+```bash
+python run_tests.py
+```
+
+This will run:
+- Code formatting checks (black, isort)
+- Code style checks (flake8)
+- Type checking (pyright)
+- Unit tests (pytest)
 
 ## Usage
 

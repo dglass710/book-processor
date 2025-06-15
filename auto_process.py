@@ -6,12 +6,13 @@ This script runs the book processor with predefined inputs to avoid manual entry
 It sets the environment variable for the input file and feeds responses to stdin.
 """
 import os
-import sys
 import subprocess
+import sys
+
 
 def main(timeout=None):
     """Main function to run the book processor with automated inputs
-    
+
     Args:
         timeout: Optional timeout in seconds. If None, no timeout will be applied.
                Set to a positive number to enable timeout.
@@ -19,14 +20,14 @@ def main(timeout=None):
     print("=" * 80)
     print("Auto Process Script - Running book processor with predefined inputs")
     print("=" * 80)
-    
+
     # Define the input file path
     input_file = r"C:\Users\dglas\Dropbox\Books\2012 RTE Manual.pdf"
-    
+
     # Set environment variables
     os.environ["BOOK_PROCESSOR_INPUT_FILE"] = input_file
     os.environ["PYTHONIOENCODING"] = "utf-8"  # Fix encoding issues
-    
+
     # Define the responses to provide to stdin
     responses = [
         "Responding to Emergencies: Comprehensive First Aid/CPR/AED by American Red Cross",  # Book title
@@ -58,33 +59,33 @@ def main(timeout=None):
         "Emergency Childbirth",  # Chapter 22 title
         "Disaster, Remote and Wilderness Emergencies",  # Chapter 23 title
     ]
-    
+
     # Add empty descriptions for each chapter
     # We need one description for each chapter
     chapter_descriptions = [""] * 23  # 23 empty strings for chapter descriptions
     responses.extend(chapter_descriptions)
-    
+
     # Add extra empty responses for any additional prompts that might come up
     extra_responses = [""] * 10  # Add some extra empty responses just in case
     responses.extend(extra_responses)
-    
+
     # Prepare the input string (join responses with newlines)
     input_str = "\n".join(responses)
-    
+
     # Path to the setup_environment.py script
     setup_script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "setup_environment.py")
-    
+
     # Run the setup_environment.py script with the prepared input
     try:
-        print(f"Running setup_environment.py with automated input...")
+        print("Running setup_environment.py with automated input...")
         print(f"Input file: {input_file}")
         print(f"Using {len(responses)} predefined responses")
         print("=" * 80)
-        
+
         # Create environment with UTF-8 encoding
         env = os.environ.copy()
         env["PYTHONIOENCODING"] = "utf-8"
-        
+
         # Run the process with real-time output display
         process = subprocess.Popen(
             [sys.executable, setup_script],
@@ -94,69 +95,71 @@ def main(timeout=None):
             text=True,
             bufsize=1,
             universal_newlines=True,
-            env=env
+            env=env,
         )
-        
+
         # Send all input at once
-        process.stdin.write(input_str)
-        process.stdin.close()
-        
+        if process.stdin is not None:
+            process.stdin.write(input_str)
+            process.stdin.close()
+
         # Read and display output in real-time with a timeout
-        import time
         import threading
-        
+        import time
+
         # Flag to indicate if the process is still running
         running = True
         output_lines = []
-        
+
         def read_output():
-            while running:
+            while running and process.stdout is not None:
                 line = process.stdout.readline()
                 if not line and process.poll() is not None:
                     break
                 if line:
                     print(line.rstrip())
                     output_lines.append(line)
-        
+
         # Start thread to read output
         output_thread = threading.Thread(target=read_output)
         output_thread.daemon = True
         output_thread.start()
-        
+
         # Wait for process with optional timeout
         start_time = time.time()
-        
+
         while process.poll() is None:
             if timeout is not None and time.time() - start_time > timeout:
-                print(f"\nProcess timed out after {timeout} seconds. Terminating...")
+                print("Error: Process timed out after {} seconds. Terminating...".format(timeout))
                 process.terminate()
                 time.sleep(1)
                 if process.poll() is None:
                     process.kill()
                 break
             time.sleep(0.1)
-        
+
         # Stop the output thread
         running = False
         output_thread.join(1)  # Wait for output thread to finish (max 1 second)
-        
+
         # Get return code
         returncode = process.poll()
-        
+
         # Check the return code
         if returncode != 0:
             print(f"Process exited with code {returncode}")
             return returncode
-        
+
         print("=" * 80)
         print("Auto process completed successfully!")
         print("=" * 80)
-        
+
         return 0
-    
+
     except Exception as e:
         print(f"Error running setup_environment.py: {e}")
         return 1
+
 
 if __name__ == "__main__":
     # By default, run with no timeout

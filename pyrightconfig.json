@@ -1,0 +1,21 @@
+{
+    "include": [
+        "*.py",
+        "processors",
+        "utils",
+        "tests",
+        "stubs"
+    ],
+    "stubPath": "stubs",
+    "exclude": [
+        "**/node_modules",
+        "**/__pycache__"
+    ],
+    "ignore": [],
+    "defineConstant": {
+        "DEBUG": true
+    },
+    "reportMissingImports": true,
+    "reportMissingTypeStubs": false,
+    "pythonVersion": "3.7"
+}

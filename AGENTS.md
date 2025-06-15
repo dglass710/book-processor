@@ -9,14 +9,13 @@ Use `CODE_REFERENCE.md` to familiarize yourself with the repository's modules, c
 - Do not commit generated assets such as images, text output, or zip archives.
 
 ## Style and checks
-Before committing, run the following tools from the repository root and fix any issues they report:
+Before committing, run the test suite from the repository root and fix any issues it reports:
 
 ```bash
-black .
-isort .
-flake8
-pyright
+python run_tests.py
 ```
+
+This will run all code quality checks (isort, black, flake8, pyright) and unit tests.
 
 If tests are added under a `tests/` directory, run `pytest` as well.
 

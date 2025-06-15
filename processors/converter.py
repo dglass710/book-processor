@@ -1,13 +1,14 @@
 """Converter module for handling file format conversions."""
 
 import os
-import sys
 import subprocess
+import sys
+
+# Import utility modules
+from utils.file_utils import check_command_exists
 
 # Add parent directory to path to allow imports
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-from utils.file_utils import check_command_exists
 
 
 class FormatConverter:
@@ -44,13 +45,14 @@ class FormatConverter:
     def ebook_to_pdf(self, ebook_path, output_pdf_path):
         """Convert an EPUB or MOBI file to PDF using ebook-convert."""
         if not self.has_ebook_convert:
-            return False, "ebook-convert command not available. Cannot convert ebook to PDF."
+            return (
+                False,
+                "ebook-convert command not available. Cannot convert ebook to PDF.",
+            )
 
         try:
             cmd = ["ebook-convert", ebook_path, output_pdf_path]
-            result = subprocess.run(
-                cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
-            )
+            result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             if result.returncode != 0:
                 return False, f"ebook-convert failed: {result.stderr.strip()}"
 
@@ -74,9 +76,7 @@ class FormatConverter:
                 djvu_path,
                 output_pdf_path,
             ]
-            result = subprocess.run(
-                cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
-            )
+            result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             if result.returncode != 0:
                 return False, f"ddjvu failed: {result.stderr.strip()}"
 
@@ -86,4 +86,3 @@ class FormatConverter:
             return True, f"Successfully converted DJVU to PDF at {output_pdf_path}"
         except Exception as e:
             return False, f"Exception during DJVU to PDF conversion: {str(e)}"
-

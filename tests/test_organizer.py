@@ -29,16 +29,12 @@ def test_process_chapter_and_combined(tmp_path):
         with open(text_dir / f"page-{i:03d}.txt", "w") as f:
             f.write(f"Page {i}")
     output_dir = tmp_path / "chapters"
-    success, msg, path, count = org.process_chapter(
-        chapter, str(text_dir), str(output_dir)
-    )
+    success, msg, path, count = org.process_chapter(chapter, str(text_dir), str(output_dir))
     assert success
     assert count > 0
     comb = CombinedChapterOrganizer()
     groups = [{"file": "01", "chapters": [1], "desc": "Intro"}]
     c_out = tmp_path / "combined"
-    success, msg, c_path = comb.create_combined_file(
-        groups[0], [chapter], str(output_dir), str(c_out)
-    )
+    success, msg, c_path = comb.create_combined_file(groups[0], [chapter], str(output_dir), str(c_out))
     assert success
     assert os.path.isfile(c_path)
