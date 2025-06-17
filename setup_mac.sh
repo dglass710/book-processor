@@ -8,7 +8,7 @@
 brew install tesseract djvulibre calibre 
 
 # Install Python dependencies
-pip3 install PyMuPDF>=1.21.1 Pillow>=9.5.0 PyPDF2>=3.0.0
+pip3 install PyMuPDF>=1.21.1 Pillow>=9.5.0 PyPDF2>=3.0.0 ebooklib>=0.17.1
 
 # Install development tools
 pip3 install 'pyright[nodejs]' flake8 black isort pytest

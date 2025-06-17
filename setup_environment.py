@@ -103,6 +103,28 @@ def main():
         print(
             "Please install DjVuLibre from https://sourceforge.net/projects/djvu/files/DjVuLibre_Windows/"
         )
+        
+    # Find and add Calibre to PATH
+    calibre_paths = [
+        r"C:\Program Files\Calibre2",
+        r"C:\Program Files (x86)\Calibre2",
+        r"C:\Program Files\Calibre",
+        r"C:\Program Files (x86)\Calibre",
+    ]
+    calibre_found = False
+    for calibre_path in calibre_paths:
+        if os.path.exists(calibre_path):
+            print(f"Found Calibre at {calibre_path}")
+            os.environ["PATH"] = calibre_path + os.pathsep + os.environ.get("PATH", "")
+            print("Added Calibre to PATH")
+            calibre_found = True
+            break
+
+    if not calibre_found:
+        print("Calibre not found in standard locations")
+        print(
+            "Please install Calibre from https://calibre-ebook.com/download"
+        )
 
     # Verify dependencies
     print("\nVerifying dependencies:")
@@ -118,8 +140,15 @@ def main():
         print("[INFO] djvused is available, skipping ddjvu check")
 
     djvulibre_ok = djvused_ok  # Consider DjVuLibre OK if djvused works (primary tool)
-
-    if not tesseract_ok or not djvulibre_ok:
+    
+    # Check for Calibre tools - check for ebook-convert as the main tool
+    calibre_ok = check_dependency("ebook-convert", "ebook-convert")
+    if calibre_ok:
+        # If ebook-convert is available, check for other useful Calibre tools
+        check_dependency("calibredb", "calibredb")
+        check_dependency("ebook-meta", "ebook-meta")
+    
+    if not tesseract_ok or not djvulibre_ok or not calibre_ok:
         print("\nSome dependencies are missing or not working properly.")
         print("Would you like to continue anyway? (y/N)")
         response = input().strip().lower()
