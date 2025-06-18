@@ -392,20 +392,8 @@ def prompt_for_chapter_descriptions(chapter_count, titles):
 
     descriptions = []
 
-    # Handle all titles (including front/back matter if present)
+    # Handle all titles 
     for i, title in enumerate(titles):
-        if title == "Front Matter":
-            print(
-                "Description for Front Matter (e.g., 'Table of Contents, Preface, Introduction')"
-            )
-        elif title == "Back Matter":
-            print(
-                "Description for Back Matter (e.g., 'Index, Bibliography, Appendices')"
-            )
-        elif title is not None:
-            print(f"Description for {title}")
-        else:
-            print(f"Description for Chapter {i + 1}")
         description = input(
             f"Description for {title if title is not None else f'Chapter {i + 1}'}: "
         ).strip()
