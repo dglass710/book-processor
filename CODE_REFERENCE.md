@@ -121,6 +121,16 @@ Worker used by `process_images_parallel` to invoke `OCRProcessor.process_image` 
 
 Runs `main()` from `main.py` after adding the repository root to `sys.path`.
 
+## run_tests.py
+
+Runs the full test suite and quality checks in order. It defines `run_command`
+for executing shell commands and `main` which runs:
+- `isort` for import sorting checks
+- `black` for formatting
+- `flake8` for linting
+- `pyright` for static type checking
+- `pytest` for unit tests under `tests/`
+
 ## setup_environment.py
 
 ### `check_dependency(name, command)`
@@ -164,5 +174,14 @@ Validation helpers:
 
 ## monitor_files.py (again)
 See above for its two simple functions.
+
+## tests/
+
+The `tests` directory contains unit tests for major modules:
+- `test_file_utils.py` – verifies file utility helpers
+- `test_progress.py` – checks progress tracking classes
+- `test_processors.py` – covers converter, extractor, and OCR classes
+- `test_organizer.py` – tests chapter organizer logic
+- `test_validation.py` – validates input and parsing helpers
 
 ---
