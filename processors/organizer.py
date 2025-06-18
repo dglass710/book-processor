@@ -296,13 +296,16 @@ class CombinedChapterOrganizer:
     Organize chapters into combined chapter files
     """
 
-    def __init__(self, max_combined_files=15):
+    def __init__(self, max_combined_files=9):
         self.max_combined_files = max_combined_files
 
     def optimize_chapter_groups(self, chapters):
         """
-        Optimize chapter grouping to minimize the largest file size
-        while keeping adjacent chapters together and limiting the total number of files
+        Optimize chapter grouping using dynamic programming to minimize the maximum file size
+        while keeping adjacent chapters together and limiting the total number of files.
+        
+        This algorithm finds the optimal distribution of chapters that minimizes
+        the largest combined file.
 
         Args:
             chapters: List of chapter dictionaries with char_count
@@ -323,41 +326,49 @@ class CombinedChapterOrganizer:
                 }
                 for i, ch in enumerate(chapters)
             ]
-
-        # Calculate total character count
-        total_chars = sum(ch["char_count"] for ch in chapters)
-
-        # Estimate target size per file (if evenly distributed)
-        target_size = total_chars / min(self.max_combined_files, len(chapters))
-
-        # Initialize groups
-        groups = []
-        current_group = []
-        current_size = 0
-
+        
+        n = len(chapters)
+        k = min(self.max_combined_files, n)  # Number of partitions
+        
+        # Create a prefix sum array for quick subarray sum calculation
+        prefix_sum = [0]
         for ch in chapters:
-            # If adding this chapter would exceed target size and we already have chapters in the group
-            # and we haven't reached the maximum number of groups yet
-            if (
-                current_size + ch["char_count"] > target_size * 1.5
-                and current_group
-                and len(groups) < self.max_combined_files - 1
-            ):
-
-                # Save current group and start a new one
-                if current_group:
-                    groups.append(current_group)
-                current_group = [ch["number"]]
-                current_size = ch["char_count"]
-            else:
-                # Add chapter to current group
-                current_group.append(ch["number"])
-                current_size += ch["char_count"]
-
-        # Add the last group if it's not empty
-        if current_group:
-            groups.append(current_group)
-
+            prefix_sum.append(prefix_sum[-1] + ch["char_count"])
+        
+        # dp[i][j] represents the minimum maximum subarray sum when
+        # partitioning chapters[0...i-1] into j partitions
+        dp = [[float('inf')] * (k + 1) for _ in range(n + 1)]
+        
+        # partition[i][j] tracks where to cut for reconstructing the solution
+        partition = [[0] * (k + 1) for _ in range(n + 1)]
+        
+        # Base case: one partition for the first i chapters
+        for i in range(1, n + 1):
+            dp[i][1] = prefix_sum[i]
+            
+        # Fill the dp table
+        for i in range(1, n + 1):
+            for j in range(2, min(i + 1, k + 1)):
+                for p in range(j - 1, i):
+                    current_cost = max(dp[p][j - 1], prefix_sum[i] - prefix_sum[p])
+                    if current_cost < dp[i][j]:
+                        dp[i][j] = current_cost
+                        partition[i][j] = p
+        
+        # Reconstruct the solution
+        groups = []
+        current = n
+        remaining = k
+        
+        while current > 0 and remaining > 0:
+            prev = partition[current][remaining]
+            # Chapters from prev+1 to current form a group
+            chapter_group = [chapters[i-1]["number"] for i in range(prev + 1, current + 1)]
+            # We insert at the beginning because we're working backwards
+            groups.insert(0, chapter_group)
+            current = prev
+            remaining -= 1
+        
         # Format the groups
         formatted_groups = []
         for i, group in enumerate(groups):
@@ -366,11 +377,13 @@ class CombinedChapterOrganizer:
                 desc = f"Chapter {group[0]}"
             else:
                 desc = f"Chapters {group[0]}–{group[-1]}"
-
-            formatted_groups.append(
-                {"file": f"{i+1:02d}", "chapters": group, "desc": desc}
-            )
-
+                
+            formatted_groups.append({
+                "file": f"{i+1:02d}",
+                "chapters": group,
+                "desc": desc
+            })
+        
         return formatted_groups
 
     def create_combined_file(self, group, chapters, chapters_dir, output_dir):

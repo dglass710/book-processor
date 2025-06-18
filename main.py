@@ -132,6 +132,10 @@ def prompt_for_input_file():
     Returns:
         tuple: (file_path, file_type)
     """
+    # Initialize variables to avoid unbound errors
+    file_path = None
+    file_type = None
+    
     # Check if we have a pre-selected file from the environment variable
     env_file_path = os.environ.get("BOOK_PROCESSOR_INPUT_FILE")
     if env_file_path and os.path.exists(env_file_path):
@@ -148,6 +152,8 @@ def prompt_for_input_file():
             print(f"Error with environment file: {message}")
             print("Falling back to manual input...")
             # Fall back to manual input
+            file_path = None  # Reset file_path to force manual input
+            file_type = None
             env_file_path = None
         else:
             # Validate file integrity
@@ -162,10 +168,12 @@ def prompt_for_input_file():
                 print(f"Error with environment file: {message}")
                 print("Falling back to manual input...")
                 # Fall back to manual input
+                file_path = None  # Reset file_path to force manual input
+                file_type = None
                 env_file_path = None
 
     # If no environment file or it was invalid, prompt manually
-    if not env_file_path or not os.path.exists(env_file_path):
+    if file_path is None or file_type is None:
         while True:
             file_path = input(
                 "Enter the path to the input file (PDF, DJVU, EPUB, or MOBI): "
@@ -206,50 +214,7 @@ def prompt_for_input_file():
 
             break
 
-    # Initialize variables to avoid unbound errors
-    file_path = None
-    file_type = None
-
-    while True:
-        file_path = input(
-            "Enter the path to the input file (PDF, DJVU, EPUB, or MOBI): "
-        ).strip()
-
-        if not file_path:
-            print("No file path provided. Please try again.")
-            continue
-
-        # Strip quotes if they were accidentally included
-        if (file_path.startswith('"') and file_path.endswith('"')) or (
-            file_path.startswith("'") and file_path.endswith("'")
-        ):
-            file_path = file_path[1:-1]
-            print(f"Note: Quotes removed from path. Using: {file_path}")
-
-        # Normalize path
-        file_path = normalize_path(file_path)
-
-        # Validate file
-        is_valid, message, file_type = validate_input_file(file_path)
-
-        if not is_valid:
-            print("Error: {}".format(message))
-            continue
-
-        # Validate file integrity
-        if file_type == "pdf":
-            is_valid, message = validate_pdf_integrity(file_path)
-        elif file_type == "djvu":
-            is_valid, message = validate_djvu_integrity(file_path)
-        else:
-            is_valid, message = True, ""
-
-        if not is_valid:
-            print("Error: {}".format(message))
-            continue
-
-        break
-
+    # At this point, file_path and file_type should be set properly
     if file_path is None or file_type is None:
         raise ValueError("Failed to get valid file path and type")
 
@@ -658,7 +623,7 @@ def main():
     progress.start_step()
     print(f"\nCreating combined chapter files in {dirs['combined']}")
 
-    combined_organizer = CombinedChapterOrganizer(max_combined_files=15)
+    combined_organizer = CombinedChapterOrganizer()
     groups = combined_organizer.optimize_chapter_groups(processed_chapters)
 
     success, message, output_files = combined_organizer.create_combined_files(
