@@ -135,7 +135,7 @@ def prompt_for_input_file():
     # Initialize variables to avoid unbound errors
     file_path = None
     file_type = None
-    
+
     # Check if we have a pre-selected file from the environment variable
     env_file_path = os.environ.get("BOOK_PROCESSOR_INPUT_FILE")
     if env_file_path and os.path.exists(env_file_path):
@@ -392,7 +392,7 @@ def prompt_for_chapter_descriptions(chapter_count, titles):
 
     descriptions = []
 
-    # Handle all titles 
+    # Handle all titles
     for i, title in enumerate(titles):
         description = input(
             f"Description for {title if title is not None else f'Chapter {i + 1}'}: "
