@@ -2,33 +2,32 @@
 Responding to Emergencies: Comprehensive First Aid/CPR/AED
 23
 y
-27 47 65 85 103 123 139 153 171 189 207 227 241 259 277 295 317 335 353 371 391 413 431 449
+3 17 27 45 67 93 125 155 167 177 203 219 243 261 275 295 315 333 351 371 383 405 419
 y
-Preparing to Help
-Activating the Emergency Medical Services System
-Responding to an Emergency
-Finding the Problem
-Stopping Bleeding
-Bandaging Wounds
-CPR
-AED
-Choking
-Sudden Illness
+441
+If Not You . . . Who?
+Responding To An Emergency
+Before Giving Care
+The Human Body
+Checking the Person
+Cardiac Emergencies
+Breathing Emergencies
+Bleeding
 Shock
-Wound Care
-Burns
-Head and Spinal Injuries
-Chest, Abdominal and Pelvic Injuries
-Bone, Joint and Muscle Injuries
-Extremity Injuries
-Splinting Extremities
-Cold-Related Emergencies
-Heat-Related Emergencies
-Water-Related Emergencies
-Wilderness First Aid
+Soft Tissue Injuries
+Musculoskeletal Injuries
+Injuries to the Extremities
+Injuries to the Head, Neck and Spine
+Injuries to the Chest, Abdomen and Pelvis
+Sudden Illnesses
 Poisoning
 Bites and Stings
-
+Substance Abuse and Misuse
+Heat-Related Illnesses and Cold-Related Emergencies
+Water-Related Emergencies
+Pediatric, Older Adult and Special Situations
+Emergency Childbirth
+Disaster, Remote and Wilderness Emergencies
 
 
 
@@ -60,6 +59,7 @@ College Physics 2e
 y
 5 37 99 147 197 227 269 323 357 391 439 489 529 577 623 677 725 773 817 857 903 953 1003 1063 1097 1151 1185 1237 1277 1319 1379 1423 1467 1503
 y
+1536
 Introduction: The Nature of Science and Physics
 Kinematics
 Two-Dimensional Kinematics
@@ -131,7 +131,10 @@ Chapter 34 explores frontiers of physics, covering cosmology, particle physics, 
 
 "/Users/dag/Dropbox/Books/automate-the-boring-stuff-with-python-2nd-edition.pdf"
 AUTOMATE THE BORING STUFF WITH PYTHON
+0
 3 21 57 77 111 129 161 187 201 231 249 267 301 329 347 371 389 415 447 473
+y
+502
 PYTHON BASICS
 FLOW CONTROL
 FUNCTIONS
@@ -173,11 +176,13 @@ Chapter 18 explores sending email and text messages with Python, covering the Gm
 Chapter 19 introduces image manipulation with Python’s Pillow module, covering image fundamentals like colors, RGBA values, and coordinates, and manipulating images by cropping, copying/pasting, resizing, rotating, flipping, and changing pixels, with a project to add a logo to images, and drawing shapes and text on images, followed by a summary, practice questions, and projects like Identifying Photo Folders.
 Chapter 20 covers GUI automation with Python’s pyautogui module, explaining how to control mouse movements, clicks, drags, and scrolling, as well as keyboard input and hotkey combinations, working with screenshots, image recognition, and window manipulation, with a project for an Automatic Form Filler and displaying message boxes, followed by a summary, practice questions, and projects like Looking Busy and Instant Messenger Bot.
 
+
 /Users/dag/Dropbox/Books/Cannabis_Encyclopedia.djvu
 The Cannabis Encyclopedia
 0
 13 23 33 41 49 61 73 85 99 123 137 151 173 203 215 227 253 303 327 333 349 395 407 449 507 533 557
 y
+574
 Medical Cannabis
 Measuring Cannabinoids
 Medical Cannabis Varieties
